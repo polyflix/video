@@ -20,7 +20,8 @@ export const configureTypeORM = (
         logging: configService.get("database.psql.debug") === "true",
         cli: {
             migrationsDir: "src/resources/migrations"
-        }
+        },
+        autoLoadEntities: true
     };
 
     // Write TypeORM json config
