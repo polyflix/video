@@ -1,6 +1,6 @@
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { isLocal } from "./loader.config";
+import { ISLOCAL } from "./loader.config";
 import { resolve } from "path";
 import { writeFileSync } from "fs";
 
@@ -9,12 +9,12 @@ export const configureTypeORM = (
 ): TypeOrmModuleOptions => {
     const config: TypeOrmModuleOptions = {
         type: "postgres",
-        host: configService.get("database.psql.host"),
+        host: configService.get<string>("database.psql.host"),
         port: configService.get("database.psql.port"),
         username: configService.get("database.psql.username"),
         password: configService.get("database.psql.password"),
-        database: configService.get("database.psqL.database"),
-        synchronize: isLocal,
+        database: configService.get("database.psql.database"),
+        synchronize: ISLOCAL,
         migrationsTableName: "migrations",
         entities: ["dist/**/*.entity.js"],
         logging: configService.get("database.psql.debug") === "true",
