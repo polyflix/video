@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-boilerplate",
+  "name": "nestjs-video",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -13,6 +13,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "typeorm:migration:generate": "npm run typeorm -- migration:generate -n",
     "typeorm:migration:run": "npm run typeorm -- migration:run",
     "typeorm:migration:revert": "npm run typeorm -- migration:revert",

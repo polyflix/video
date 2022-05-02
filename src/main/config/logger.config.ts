@@ -14,7 +14,6 @@ import { ISLOCAL } from "./loader.config";
  * environments.
  */
 function tracingFormat(): Format {
-    const tracer = otelTrace.getTracer("logform");
     return format((info) => {
         const span: Span | undefined = otelTrace.getSpan(context.active());
         if (span) {
