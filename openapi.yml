@@ -217,3 +217,21 @@ paths:
       description: Like/Unlike video by slug
       security:
         - bearer: []
+  '/api/videos/metadata/{id}':
+    get:
+      operationId: videocontroller-findmetas
+      summary: Get a video metadata on youtube data API
+      description: Get a video metadata on youtube data API
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Resource not found
+      tags:
+        - Video

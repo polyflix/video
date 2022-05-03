@@ -5,6 +5,7 @@ import { VideoApiMapper } from "../adapters/mappers/video.api.mapper";
 import { Video } from "../../domain/models/video.model";
 import { VideoResponse } from "../../application/dto/video-response.dto";
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
+import { youtube_v3 } from "googleapis";
 
 @Controller("video")
 export class CrudVideoController {
@@ -29,5 +30,16 @@ export class CrudVideoController {
     async findOne(@Param("slug") slug: string): Promise<VideoResponse> {
         const video: Video = await this.videoService.findOne(slug);
         return this.videoApiMapper.entityToApi(video);
+    }
+
+    /**
+     * Find a video metadata with youtube unique video id.
+     * @param {string} slug youtube video id
+     */
+    @Get("metadata/:slug")
+    async findMetas(
+        @Param("slug") slug: string
+    ): Promise<youtube_v3.Schema$Video> {
+        return this.videoService.findMetadata(slug);
     }
 }
