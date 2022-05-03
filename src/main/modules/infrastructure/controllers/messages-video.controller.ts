@@ -10,7 +10,7 @@ import { ConfigService } from "@nestjs/config";
 import { Video } from "../../domain/models/video.model";
 import { VideoService } from "../services/video.service";
 import { BucketType } from "src/main/core/types/bucket.type";
-import { PolyflixClientKafka } from "src/main/core/kafka/kafka.client";
+import { PolyflixClientKafka } from "src/main/core/configuration/kafka.client";
 
 @Controller()
 export class MessageVideoController {

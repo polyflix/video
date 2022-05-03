@@ -3,10 +3,11 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { OpenTelemetryModule } from "nestjs-otel";
 import { AppService } from "./app.service";
 import { HealthModule } from "./core/health/health.module";
-import { KafkaModule } from "./core/kafka/kafka.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { configureTypeORM } from "./config/database.config";
 import { VideoModule } from "./modules/infrastructure/video.module";
+import { MinioConfigModule } from "./core/configuration/minio.module";
+import { KafkaModule } from "./core/configuration/kafka.module";
 
 interface AppModuleOptions {
     config?: Record<string, any>;
@@ -18,6 +19,7 @@ export class AppModule {
             module: AppModule,
             providers: [Logger, AppService],
             imports: [
+                MinioConfigModule,
                 KafkaModule,
                 HealthModule,
                 VideoModule,
