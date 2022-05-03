@@ -7,7 +7,6 @@ import {
     SortingTypeEnum
 } from "../../../core/helpers/abstract.filter";
 import { VideoParams } from "./video.params";
-import { Visibility } from "../adapters/repositories/entities/content.model";
 
 @Injectable()
 export class VideoFilter extends AbstractFilter<VideoEntity> {

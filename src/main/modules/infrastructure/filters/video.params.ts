@@ -1,6 +1,5 @@
 import { Pagination } from "../../../core/types/pagination.type";
-import { Visibility } from "../adapters/repositories/entities/content.model";
-import { IsEnum, IsInt, IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export const DefaultVideoParams: VideoParams = {
     page: 1,
