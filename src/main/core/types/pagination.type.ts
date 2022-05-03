@@ -1,4 +1,3 @@
-import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import {
     IsInt,
@@ -15,7 +14,6 @@ export class Pagination {
     @Max(2147483647)
     @IsOptional()
     @Type(() => Number)
-    @ApiProperty()
     page?: number;
 
     @IsNumber()
@@ -23,11 +21,9 @@ export class Pagination {
     @Max(2147483647)
     @Type(() => Number)
     @IsOptional()
-    @ApiProperty()
     pageSize?: number;
 
     @IsString()
     @IsOptional()
-    @ApiProperty()
     order?: string;
 }

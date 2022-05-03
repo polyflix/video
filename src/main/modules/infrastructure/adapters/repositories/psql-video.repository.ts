@@ -4,12 +4,13 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { VideoRepository } from "../../../domain/ports/repositories/video.repository";
 import { VideoEntityMapper } from "../mappers/video.entity.mapper";
+import { VideoEntity } from "./entities/video.entity";
 
 export class PsqlVideoRepository extends VideoRepository {
     constructor(
-        private readonly videoEntityMapper: VideoEntityMapper,
-        @InjectRepository(Video)
-        private readonly videoRepo: Repository<Video>
+        @InjectRepository(VideoEntity)
+        private readonly videoRepo: Repository<VideoEntity>,
+        private readonly videoEntityMapper: VideoEntityMapper
     ) {
         super();
     }

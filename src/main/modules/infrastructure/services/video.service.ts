@@ -5,12 +5,13 @@ import { VideoResponse } from "../../application/dto/video-response.dto";
 import { VideoApiMapper } from "../adapters/mappers/video.api.mapper";
 import { Video } from "../../domain/models/video.model";
 import { Option } from "@swan-io/boxed";
+import { VideoRepository } from "../../domain/ports/repositories/video.repository";
 
 @Injectable()
 export class VideoService {
     constructor(
         private readonly videoApiMapper: VideoApiMapper,
-        private readonly psqlVideoRepository: PsqlVideoRepository
+        private readonly psqlVideoRepository: VideoRepository
     ) {}
 
     async findAll(

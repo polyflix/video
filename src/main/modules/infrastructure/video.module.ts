@@ -1,11 +1,12 @@
-import {Module} from "@nestjs/common";
-import {PsqlVideoRepository} from "./adapters/repositories/psql-video.repository";
-import {TypeOrmModule} from "@nestjs/typeorm";
-import {VideoEntity} from "./adapters/repositories/entities/video.entity";
-import {CrudVideoController} from "./controllers/crud-video.controller";
-import {VideoService} from "./services/video.service";
-import {VideoApiMapper} from "./adapters/mappers/video.api.mapper";
-import {VideoEntityMapper} from "./adapters/mappers/video.entity.mapper";
+import { Module } from "@nestjs/common";
+import { PsqlVideoRepository } from "./adapters/repositories/psql-video.repository";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { VideoEntity } from "./adapters/repositories/entities/video.entity";
+import { CrudVideoController } from "./controllers/crud-video.controller";
+import { VideoService } from "./services/video.service";
+import { VideoApiMapper } from "./adapters/mappers/video.api.mapper";
+import { VideoEntityMapper } from "./adapters/mappers/video.entity.mapper";
+import { VideoRepository } from "../domain/ports/repositories/video.repository";
 
 @Module({
     controllers: [CrudVideoController],
@@ -13,8 +14,7 @@ import {VideoEntityMapper} from "./adapters/mappers/video.entity.mapper";
     imports: [TypeOrmModule.forFeature([VideoEntity])],
     providers: [
         VideoService,
-        PsqlVideoRepository,
-        { provide: PsqlVideoRepository, useClass: PsqlVideoRepository },
+        { provide: VideoRepository, useClass: PsqlVideoRepository },
         VideoApiMapper,
         VideoEntityMapper
     ]
