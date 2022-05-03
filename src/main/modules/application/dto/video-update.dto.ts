@@ -1,3 +1,3 @@
-import { Video } from "src/main/modules/domain/models/video.model";
+import { VideoResponse } from "./video-response.dto";
 
-export type UpdateVideoDto = Partial<Video>;
+export type UpdateVideoDto = Partial<VideoResponse>;

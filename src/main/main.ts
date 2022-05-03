@@ -1,6 +1,7 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
+import { kafkaConfig } from "./config/kafka.config";
 import { loadConfiguration } from "./config/loader.config";
 import { logger } from "./config/logger.config";
 import { configureOTel } from "./config/tracing.config";
@@ -28,6 +29,8 @@ async function bootstrap() {
     app.enableShutdownHooks();
 
     const port = config["server"]["port"] || 3000;
+    app.connectMicroservice(kafkaConfig(config["kafka"]));
+    app.startAllMicroservices();
 
     await app.listen(port, () => {
         logger.log(`Server listening on port ${port}`, "NestApplication");

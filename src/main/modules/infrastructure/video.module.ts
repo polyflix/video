@@ -8,9 +8,12 @@ import { VideoApiMapper } from "./adapters/mappers/video.api.mapper";
 import { VideoEntityMapper } from "./adapters/mappers/video.entity.mapper";
 import { VideoRepository } from "../domain/ports/repositories/video.repository";
 import { VideoFilter } from "./filters/video.filter";
+import { ExternalVideoService } from "./services/external-video.service";
+import { InternalVideoService } from "./services/internal-video.service";
+import { MessageVideoController } from "./controllers/messages-video.controller";
 
 @Module({
-    controllers: [CrudVideoController],
+    controllers: [CrudVideoController, MessageVideoController],
     exports: [VideoService],
     imports: [TypeOrmModule.forFeature([VideoEntity])],
     providers: [
@@ -19,7 +22,9 @@ import { VideoFilter } from "./filters/video.filter";
         VideoFilter,
         { provide: VideoRepository, useClass: PsqlVideoRepository },
         VideoApiMapper,
-        VideoEntityMapper
+        VideoEntityMapper,
+        ExternalVideoService,
+        InternalVideoService
     ]
 })
 export class VideoModule {}

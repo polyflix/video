@@ -3,7 +3,8 @@ import { exposureMetadataKey } from "../decorators/expose.decorator";
 export enum TriggerType {
     CREATE = "CREATE",
     DELETE = "DELETE",
-    UPDATE = "UPDATE"
+    UPDATE = "UPDATE",
+    PROCESSING = "PROCESSING"
 }
 
 export class KafkaEventBuilder<T> {

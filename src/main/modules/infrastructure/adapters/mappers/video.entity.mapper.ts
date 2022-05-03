@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { AbstractMapper } from "../../../../core/helpers/abstract.mapper";
-import { Video } from "../../../domain/models/video.model";
+import { Video, VideoProps } from "../../../domain/models/video.model";
 import { VideoEntity } from "../repositories/entities/video.entity";
 
 @Injectable()
@@ -12,7 +12,8 @@ export class VideoEntityMapper extends AbstractMapper<VideoEntity, Video> {
     }
 
     entityToApi(entity: VideoEntity): Video {
-        const video = new Video();
+        // TODO WARN
+        const video = Video.create(Object.assign(new VideoProps(), entity));
         Object.assign(video, entity);
         return video;
     }

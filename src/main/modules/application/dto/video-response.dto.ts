@@ -37,4 +37,6 @@ export class VideoResponse {
     createdAt?: Date;
 
     updatedAt?: Date;
+
+    src?: string;
 }

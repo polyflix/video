@@ -1,3 +1,3 @@
-import { Video } from "src/main/modules/domain/models/video.model";
+import { VideoResponse } from "./video-response.dto";
 
-export type VideoCreateDto = Omit<Video, "slug">;
+export type VideoCreateDto = VideoResponse;

@@ -1,46 +1,53 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { DefaultVideoParams, VideoParams } from "../filters/video.params";
-import { VideoResponse } from "../../application/dto/video-response.dto";
-import { VideoApiMapper } from "../adapters/mappers/video.api.mapper";
-import { Video } from "../../domain/models/video.model";
-import { Option } from "@swan-io/boxed";
-import { VideoFilter as VideoBuildFilter } from "../filters/video.filter";
+import { isYoutubeVideo, Video } from "../../domain/models/video.model";
 import { PsqlVideoRepository } from "../adapters/repositories/psql-video.repository";
+import { VideoCreateDto } from "../../application/dto/video-create.dto";
+import { VideoApiMapper } from "../adapters/mappers/video.api.mapper";
+import { ExternalVideoService } from "./external-video.service";
+import { InternalVideoService } from "./internal-video.service";
 
 @Injectable()
 export class VideoService {
+    protected readonly logger = new Logger(VideoService.name);
     constructor(
-        private readonly videoApiMapper: VideoApiMapper,
         private readonly psqlVideoRepository: PsqlVideoRepository,
-        private readonly videoFilter: VideoBuildFilter
+        private readonly videoApiMapper: VideoApiMapper,
+        private readonly externalVideoService: ExternalVideoService,
+        private readonly internalVideoService: InternalVideoService
     ) {}
 
-    async findAll(
-        params: VideoParams = DefaultVideoParams
-    ): Promise<VideoResponse[]> {
-        const queryBuilder = await this.psqlVideoRepository.createQueryBuilder(
-            "video"
-        );
-        this.videoFilter.buildFilters(queryBuilder, params);
-        this.videoFilter.buildPaginationAndSort(queryBuilder, params);
+    async create(video: VideoCreateDto): Promise<Video> {
+        // const model = await this.psqlVideoRepository.create(video);
 
-        const videoEntities: Video[] = await queryBuilder.getMany();
+        let newVideo: Video = null;
+        if (isYoutubeVideo(video.src)) {
+            this.logger.debug(`New video was detected to be a external video`);
+            newVideo = await this.internalVideoService.create(video);
+        } else {
+            this.logger.debug(`New video was detected to be an internal video`);
+            newVideo = await this.externalVideoService.create(video);
+        }
 
-        return this.videoApiMapper.entitiesToApis(videoEntities);
+        return newVideo;
     }
 
-    async findOne(slug: string): Promise<VideoResponse> {
-        const model: Option<Video> = await this.psqlVideoRepository.findOne(
-            slug
-        );
+    async findAll(params: VideoParams = DefaultVideoParams): Promise<Video[]> {
+        const videos = await this.psqlVideoRepository.findAll(params);
+        return videos.match({
+            Some: (value: Video[]) => value,
+            None: () => []
+        });
+    }
 
-        return this.videoApiMapper.entityToApi(
-            model.match({
-                Some: (value: Video) => value,
-                None: () => {
-                    throw new NotFoundException("Video not found");
-                }
-            })
-        );
+    async findOne(slug: string): Promise<Video> {
+        const model = await this.psqlVideoRepository.findOne(slug);
+
+        return model.match({
+            Some: (value: Video) => value,
+            None: () => {
+                throw new NotFoundException("Video not found");
+            }
+        });
     }
 }
