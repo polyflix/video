@@ -18,7 +18,7 @@ export class Pagination {
 
     @IsNumber()
     @Min(1)
-    @Max(2147483647)
+    @Max(100)
     @Type(() => Number)
     @IsOptional()
     pageSize?: number;

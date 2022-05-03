@@ -1,1 +1,0 @@
-{"type":"postgres","host":"localhost","port":5433,"username":"sa_video","password":"sa_video_pwd","database":"video","synchronize":true,"migrationsTableName":"migrations","entities":["src/**/*.entity.ts"],"logging":false,"cli":{"migrationsDir":"src/resources/migrations"},"autoLoadEntities":true,"migrations":["src/resources/migrations/*.ts"]}

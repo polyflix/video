@@ -7,6 +7,7 @@ import { VideoService } from "./services/video.service";
 import { VideoApiMapper } from "./adapters/mappers/video.api.mapper";
 import { VideoEntityMapper } from "./adapters/mappers/video.entity.mapper";
 import { VideoRepository } from "../domain/ports/repositories/video.repository";
+import { VideoFilter } from "./filters/video.filter";
 
 @Module({
     controllers: [CrudVideoController],
@@ -14,6 +15,8 @@ import { VideoRepository } from "../domain/ports/repositories/video.repository";
     imports: [TypeOrmModule.forFeature([VideoEntity])],
     providers: [
         VideoService,
+        PsqlVideoRepository,
+        VideoFilter,
         { provide: VideoRepository, useClass: PsqlVideoRepository },
         VideoApiMapper,
         VideoEntityMapper

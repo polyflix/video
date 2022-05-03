@@ -16,67 +16,20 @@ components:
     Video:
       type: object
       properties:
-        id:
-          type: string
         slug:
-          type: string
-        title:
           type: string
         description:
           type: string
         thumbnail:
           type: string
-        publishedBy:
-          $ref: '#/components/schemas/User'
-        visibility:
-          type: string
-          enum:
-            - PUBLIC
-            - PROTECTED
-            - PRIVATE
-        draft:
-          type: boolean
         likes:
           type: number
         views:
           type: number
-        userMeta:
-          $ref: '#/components/schemas/UserVideoMeta'
-        tags:
-          type: array
-          items:
-            type: string
-        attachments:
-          type: array
-          items:
-            type: string
-        availableLanguages:
-          type: array
-          items:
-            type: string
-        sourceType:
-          type: string
-          enum:
-            - YOUTUBE
-            - INTERNAL
-            - UNKNOWN
-        source:
-          type: string
-        createdAt:
-          format: date-time
-          type: string
-        updatedAt:
-          format: date-time
-          type: string
       required:
-        - id
         - slug
-        - title
         - description
         - thumbnail
-        - visibility
-        - draft
-        - userMeta
 paths:
   /api/videos:
     get:
@@ -114,11 +67,13 @@ paths:
           in: query
           schema:
             type: string
+          description: Not implemented yet
         - name: collectionId
           required: false
           in: query
           schema:
             type: string
+          description: Not implemented yet
         - name: visibility
           required: true
           in: query
@@ -128,36 +83,43 @@ paths:
               - PROTECTED
               - PRIVATE
             type: string
+          description: Not implemented yet
         - name: draft
           required: false
           in: query
           schema:
             type: boolean
+          description: Not implemented yet
         - name: isWatched
           required: false
           in: query
           schema:
             type: boolean
+          description: Not implemented yet
         - name: watchCount
           required: false
           in: query
           schema:
             type: number
+          description: Not implemented yet
         - name: isWatching
           required: false
           in: query
           schema:
             type: boolean
+          description: Not implemented yet
         - name: joinWithPublisher
           required: false
           in: query
           schema:
             type: boolean
+          description: Not implemented yet
         - name: exact
           required: false
           in: query
           schema:
             type: boolean
+          description: Not implemented yet
         - name: minViews
           required: false
           in: query
@@ -174,12 +136,14 @@ paths:
           schema:
             format: date-time
             type: string
+          description: Not implemented yet
         - name: endDate
           required: false
           in: query
           schema:
             format: date-time
             type: string
+          description: Not implemented yet
         - name: tags
           required: false
           in: query
@@ -187,12 +151,14 @@ paths:
             type: array
             items:
               type: string
+          description: Not implemented yet
         - name: allTags
           required: false
           in: query
           schema:
             default: false
             type: boolean
+          description: Not implemented yet
       responses:
         undefined:
           description: ''

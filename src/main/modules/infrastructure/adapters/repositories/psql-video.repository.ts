@@ -1,7 +1,7 @@
 import { Video } from "../../../domain/models/video.model";
 import { Option, Result } from "@swan-io/boxed";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 import { VideoRepository } from "../../../domain/ports/repositories/video.repository";
 import { VideoEntityMapper } from "../mappers/video.entity.mapper";
 import { VideoEntity } from "./entities/video.entity";
@@ -47,5 +47,11 @@ export class PsqlVideoRepository extends VideoRepository {
         } catch (e) {
             return Option.None();
         }
+    }
+
+    async createQueryBuilder(
+        alias: string
+    ): Promise<SelectQueryBuilder<VideoEntity>> {
+        return this.videoRepo.createQueryBuilder(alias);
     }
 }

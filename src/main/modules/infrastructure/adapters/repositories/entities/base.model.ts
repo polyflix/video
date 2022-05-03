@@ -1,15 +1,17 @@
 import { IsOptional } from "class-validator";
 import {
     CreateDateColumn,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
     UpdateDateColumn,
     VersionColumn
 } from "typeorm";
 
 export abstract class BaseModel {
-    @IsOptional({ always: true })
-    @PrimaryGeneratedColumn("uuid")
-    id?: string;
+    @PrimaryColumn({
+        type: "varchar",
+        length: 64
+    })
+    slug: string;
 
     @IsOptional({ always: true })
     @CreateDateColumn()
