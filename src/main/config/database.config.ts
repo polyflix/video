@@ -7,13 +7,26 @@ import { writeFileSync } from "fs";
 export const configureTypeORM = (
     configService: ConfigService
 ): TypeOrmModuleOptions => {
+    const url = configService.get<string>("database.psql.url");
+    const credentialsConfig: any = {};
+    if (url && url.length > 0) {
+        credentialsConfig.url = url;
+    } else {
+        credentialsConfig.host = configService.get("database.psql.host");
+        credentialsConfig.port = configService.get("database.psql.port");
+        credentialsConfig.username = configService.get(
+            "database.psql.username"
+        );
+        credentialsConfig.password = configService.get(
+            "database.psql.password"
+        );
+        credentialsConfig.database = configService.get(
+            "database.psql.database"
+        );
+    }
+
     const config: TypeOrmModuleOptions = {
         type: "postgres",
-        host: configService.get("database.psql.host"),
-        port: configService.get("database.psql.port"),
-        username: configService.get("database.psql.username"),
-        password: configService.get("database.psql.password"),
-        database: configService.get("database.psql.database"),
         synchronize: ISLOCAL,
         migrationsTableName: "migrations",
         entities: ["dist/**/*.entity.js"],
@@ -21,7 +34,8 @@ export const configureTypeORM = (
         cli: {
             migrationsDir: "src/resources/migrations"
         },
-        autoLoadEntities: true
+        autoLoadEntities: true,
+        ...credentialsConfig
     };
 
     // Write TypeORM json config
