@@ -1,5 +1,5 @@
 import { Option, Result } from "@swan-io/boxed";
-import { Todo } from "../../entities/todo.entity";
+import { Todo } from "../../models/todo.entity";
 
 export abstract class TodoRepository {
     abstract findAll(): Todo[];

@@ -21,3 +21,9 @@ export class Video {
 
     thumbnail: string;
 }
+
+export enum VideoSource {
+    YOUTUBE = "youtube",
+    INTERNAL = "internal",
+    UNKNOWN = "unknown"
+}

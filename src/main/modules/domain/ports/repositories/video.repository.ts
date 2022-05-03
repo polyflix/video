@@ -1,4 +1,4 @@
-import { Video } from "../../entities/video.entity";
+import { Video } from "../../models/video.model";
 import { Option, Result } from "@swan-io/boxed";
 import { Logger } from "@nestjs/common";
 

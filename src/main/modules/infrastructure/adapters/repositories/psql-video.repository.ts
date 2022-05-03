@@ -1,14 +1,15 @@
-import { VideoRepository } from "../../../domain/ports/repositories/video.repository";
-import { Video } from "../../../domain/entities/video.entity";
+import { Video } from "../../../domain/models/video.model";
 import { Option, Result } from "@swan-io/boxed";
-import { VideoEntity } from "./entities/psql-video.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { VideoRepository } from "../../../domain/ports/repositories/video.repository";
+import { VideoEntityMapper } from "../mappers/video.entity.mapper";
 
 export class PsqlVideoRepository extends VideoRepository {
     constructor(
-        @InjectRepository(VideoEntity)
-        private readonly videoRepo: Repository<VideoEntity>
+        private readonly videoEntityMapper: VideoEntityMapper,
+        @InjectRepository(Video)
+        private readonly videoRepo: Repository<Video>
     ) {
         super();
     }
@@ -20,12 +21,20 @@ export class PsqlVideoRepository extends VideoRepository {
         // TODO: Check whether slug is taken & generate a unique slug
         try {
             const result = await this.videoRepo.save(
-                this.#toVideoEntity(video)
+                this.videoEntityMapper.apiToEntity(video)
             );
-            return Result.Ok(this.#toVideo(result));
+            return Result.Ok(this.videoEntityMapper.entityToApi(result));
         } catch (e) {
             return Result.Error(e);
         }
+    }
+
+    async findAll(): Promise<Option<Video[]>> {
+        const result = await this.videoRepo.find();
+        if (result.length === 0) {
+            return Option.None();
+        }
+        return Option.Some(result);
     }
 
     async findOne(slug: string): Promise<Option<Video>> {
@@ -33,32 +42,9 @@ export class PsqlVideoRepository extends VideoRepository {
             const result = await this.videoRepo.findOne({
                 slug
             });
-            return Option.Some(this.#toVideo(result));
+            return Option.Some(this.videoEntityMapper.entityToApi(result));
         } catch (e) {
             return Option.None();
         }
-    }
-
-    /**
-     * Private method that can convert domain video entity
-     * to postgres video entity
-     * @param {Video} video -- Video entity
-     * @private
-     */
-    #toVideoEntity(video: Video): VideoEntity {
-        const entity = new VideoEntity();
-        Object.assign(entity, video);
-        return entity;
-    }
-
-    /**
-     * Method that can convert a repository specific to domain entity
-     * @param entity
-     * @private
-     */
-    #toVideo(entity: VideoEntity): Video {
-        const video = new Video();
-        Object.assign(video, entity);
-        return video;
     }
 }
