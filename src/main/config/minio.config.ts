@@ -10,8 +10,8 @@ export const configureMinio = (
         config: {
             port: port,
             endPoint: configService.get<string>("minio.host") ?? "localhost",
-            accessKey: configService.get<string>("minio.access_key"),
-            secretKey: configService.get<string>("minio.secret_key"),
+            accessKey: configService.get<string>("minio.credentials.access"),
+            secretKey: configService.get<string>("minio.credentials.secret"),
             useSSL: secure
         }
     };
