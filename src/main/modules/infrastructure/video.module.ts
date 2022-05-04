@@ -11,18 +11,37 @@ import { VideoFilter } from "./filters/video.filter";
 import { ExternalVideoService } from "./services/external-video.service";
 import { InternalVideoService } from "./services/internal-video.service";
 import { MessageVideoController } from "./controllers/messages-video.controller";
+import { StatsVideoController } from "./controllers/stats-video.controller";
+import { LikeService } from "./services/like.service";
+import { LikeRepository } from "../domain/ports/repositories/like.repository";
+import { PsqlLikeRepository } from "./adapters/repositories/psql-like.repository";
+import { LikeEntityMapper } from "./adapters/mappers/like.entity.mapper";
+import { LikeApiMapper } from "./adapters/mappers/like.api.mapper";
+import { LikeEntity } from "./adapters/repositories/entities/like.entity";
 
 @Module({
-    controllers: [CrudVideoController, MessageVideoController],
-    exports: [VideoService],
-    imports: [TypeOrmModule.forFeature([VideoEntity])],
+    controllers: [
+        CrudVideoController,
+        StatsVideoController,
+        MessageVideoController
+    ],
+    exports: [VideoService, LikeService],
+    imports: [
+        TypeOrmModule.forFeature([VideoEntity]),
+        TypeOrmModule.forFeature([LikeEntity])
+    ],
     providers: [
         VideoService,
+        LikeService,
         PsqlVideoRepository,
+        PsqlLikeRepository,
         VideoFilter,
         { provide: VideoRepository, useClass: PsqlVideoRepository },
+        { provide: LikeRepository, useClass: PsqlLikeRepository },
         VideoApiMapper,
         VideoEntityMapper,
+        LikeEntityMapper,
+        LikeApiMapper,
         ExternalVideoService,
         InternalVideoService
     ]

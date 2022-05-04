@@ -13,7 +13,17 @@ export class VideoEntityMapper extends AbstractMapper<VideoEntity, Video> {
 
     entityToApi(entity: VideoEntity): Video {
         // TODO WARN
-        const video = Video.create(Object.assign(new VideoProps(), entity));
+        const videoProps: VideoProps = {
+            likes: entity.likes,
+            source: "",
+            sourceType: "",
+            src: "",
+            thumbnail: entity.thumbnail,
+            views: 0,
+            slug: entity.slug,
+            description: entity.description
+        };
+        const video = Video.create(videoProps);
         Object.assign(video, entity);
         return video;
     }

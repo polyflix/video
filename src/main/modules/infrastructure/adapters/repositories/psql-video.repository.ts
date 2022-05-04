@@ -1,7 +1,7 @@
 import { isYoutubeVideo, Video } from "../../../domain/models/video.model";
 import { Option, Result } from "@swan-io/boxed";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, SelectQueryBuilder } from "typeorm";
+import { Repository, SelectQueryBuilder, UpdateResult } from "typeorm";
 import { VideoRepository } from "../../../domain/ports/repositories/video.repository";
 import { VideoEntityMapper } from "../mappers/video.entity.mapper";
 import { VideoEntity } from "./entities/video.entity";
@@ -9,6 +9,7 @@ import { VideoCreateDto } from "src/main/modules/application/dto/video-create.dt
 import { DefaultVideoParams, VideoParams } from "../../filters/video.params";
 import { VideoFilter } from "../../filters/video.filter";
 import { VideoApiMapper } from "../mappers/video.api.mapper";
+import { UpdateVideoDto } from "../../../application/dto/video-update.dto";
 
 export class PsqlVideoRepository extends VideoRepository {
     constructor(
@@ -19,6 +20,7 @@ export class PsqlVideoRepository extends VideoRepository {
     ) {
         super();
     }
+
     /**
      * Create a new entity based on video domain entity
      * @param video
@@ -55,11 +57,24 @@ export class PsqlVideoRepository extends VideoRepository {
         this.logger.log(`Find one video with slug ${slug}`);
         try {
             const result = await this.videoRepo.findOne({
-                slug
+                where: { slug }
             });
-            return Option.fromNullable<Video>(
-                this.videoEntityMapper.entityToApi(result)
-            );
+            if (result) {
+                return Option.Some(this.videoEntityMapper.entityToApi(result));
+            }
+            return Option.None();
+        } catch (e) {
+            return Option.None();
+        }
+    }
+
+    async update(
+        slug: string,
+        video: UpdateVideoDto
+    ): Promise<Option<Partial<Video>>> {
+        try {
+            await this.videoRepo.update(slug, video);
+            return Option.Some(video);
         } catch (e) {
             return Option.None();
         }

@@ -2,8 +2,6 @@ import { Visibility } from "../../infrastructure/adapters/repositories/entities/
 import { VideoSource } from "../../domain/models/video.model";
 
 export class VideoResponse {
-    id: string;
-
     slug: string;
 
     title: string;

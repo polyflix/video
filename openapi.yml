@@ -3,9 +3,11 @@ info:
   title: Polyflix video service API
   description: Video Servie OpenAPI document.
   version: '2.0'
-  contact: {}
+  contact: { }
 tags: []
-servers: []
+servers:
+  - url: /v2.0.0
+    description: v2
 components:
   securitySchemes:
     bearer:
@@ -31,7 +33,7 @@ components:
         - description
         - thumbnail
 paths:
-  /api/videos:
+  /videos:
     get:
       operationId: videocontroller-findall
       summary: Get a list of videos
@@ -172,7 +174,8 @@ paths:
         - Video
       security:
         - bearer: []
-  '/api/videos/{slug}':
+    parameters: []
+  '/videos/{slug}':
     get:
       operationId: videocontroller-findone
       summary: Get a video by slug
@@ -190,5 +193,27 @@ paths:
           description: Resource not found
       tags:
         - Video
+      security:
+        - bearer: []
+    parameters:
+      - schema:
+          type: string
+        name: slug
+        in: path
+        required: true
+  '/stats/video/{id}/like':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    patch:
+      summary: ''
+      operationId: patch-stats-like
+      responses:
+        '200':
+          description: OK
+      description: Like/Unlike video by slug
       security:
         - bearer: []

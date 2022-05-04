@@ -67,6 +67,7 @@ export class VideoProps {
 
     sourceType: string;
 }
+
 export class Video {
     private constructor(
         public slug: string,
@@ -99,17 +100,19 @@ export class Video {
         });
     }
 
+    //todo uncomment when field will be added to entity
+    //todo add field: src, sourceType, source to entity
     private validate(): Result<string, string> {
         if (this.src && this.thumbnail) {
             return Result.Error("No source or thumbnail specified");
         }
-        if (!isSourceValid(this.src)) {
+        /*if (!isSourceValid(this.src)) {
             return Result.Error("This video source is not yet allowed");
-        }
+        }*/
         if (!isThumbnailValid(this.thumbnail)) {
             return Result.Error("This thumbnail format is not yet allowed");
         }
-        if (this.sourceType === VideoSource.YOUTUBE && !isFile(this.src)) {
+        /*if (this.sourceType === VideoSource.YOUTUBE && !isFile(this.src)) {
             return Result.Error("This thumbnail format is not yet allowed");
         }
         if (
@@ -117,7 +120,7 @@ export class Video {
             !isFile(this.thumbnail)
         ) {
             return Result.Error("Source thumbnail should be a local file name");
-        }
+        }*/
         return Result.Ok("Model Valid");
     }
 }
