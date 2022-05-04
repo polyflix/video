@@ -6,7 +6,7 @@ import { Video } from "../../domain/models/video.model";
 import { VideoResponse } from "../../application/dto/video-response.dto";
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
 
-@Controller("/api/videos")
+@Controller("video")
 export class CrudVideoController {
     constructor(
         private readonly videoService: VideoService,
