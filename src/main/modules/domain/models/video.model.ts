@@ -1,4 +1,7 @@
+import { Logger } from "@nestjs/common";
 import { Option, Result } from "@swan-io/boxed";
+import { logger } from "../../../config/logger.config";
+import { Visibility } from "../../infrastructure/adapters/repositories/entities/content.model";
 import { VideoInvalidError } from "../errors/video-invalid.error";
 
 const YOUTUBE_MATCH_REGEX =
@@ -15,7 +18,6 @@ export const isThumbnailValid = (source: string): boolean => {
 
 export const isYoutubeVideo = (url: string) => {
     const regex = new RegExp(YOUTUBE_MATCH_REGEX, "gi");
-
     return regex.test(url);
 };
 
@@ -32,6 +34,10 @@ export const isFile = (source: string): boolean => {
     return /^([a-zA-Z0-9\s_\-\(\)])+([.][a-zA-Z0-9]+)$/.test(source);
 };
 
+export const formatMinIOFilename = (videoSlug: string, file: string) => {
+    return `${videoSlug}/${file}`;
+};
+
 export enum VideoSource {
     YOUTUBE = "youtube",
     INTERNAL = "internal",
@@ -39,88 +45,122 @@ export enum VideoSource {
 }
 
 export class VideoProps {
-    /**
-     * This is an unique slug for the video
-     */
     slug: string;
 
-    /**
-     * Description of the video, it can contain a lot of data
-     */
+    title: string;
+
     description: string;
-
-    /**
-     * Number of likes for a video
-     */
-    likes: number;
-
-    /**
-     * Number of views for a video
-     */
-    views: number;
 
     thumbnail: string;
 
-    src: string;
+    publisherId: string;
+
+    visibility: Visibility;
+
+    draft: boolean;
+
+    likes: number;
+
+    views: number;
+
+    sourceType: VideoSource;
 
     source: string;
 
-    sourceType: string;
+    createdAt?: Date;
+
+    updatedAt?: Date;
 }
 
 export class Video {
+    protected readonly logger = new Logger(Video.name);
     private constructor(
         public slug: string,
+        public title: string,
         public description: string,
+        public thumbnail: string,
+        public publisherId: string,
+        public visibility: Visibility,
+        public draft: boolean,
         public likes: number,
         public views: number,
-        public thumbnail: string,
-        public src: string,
-        public source: string,
-        public sourceType: string
+        public sourceType: VideoSource,
+        private _source: string,
+        public createdAt?: Date,
+        public updatedAt?: Date
     ) {}
 
     static create(props: VideoProps): Video {
         const video = new Video(
             props.slug,
+            props.title,
             props.description,
+            props.thumbnail,
+            props.publisherId,
+            props.visibility,
+            props.draft,
             props.likes,
             props.views,
-            props.thumbnail,
-            props.src,
+            props.sourceType,
             props.source,
-            props.sourceType
+            props.createdAt,
+            props.updatedAt
         );
 
         return video.validate().match({
             Ok: () => video,
             Error: (e) => {
+                logger.error(e);
                 throw new VideoInvalidError(e);
             }
         });
     }
 
-    //todo uncomment when field will be added to entity
-    //todo add field: src, sourceType, source to entity
+    set source(value) {
+        this._source = value;
+    }
+    get source(): string {
+        return this.sourceType === VideoSource.YOUTUBE
+            ? `https://www.youtube.com/watch?v=${this._source}`
+            : this._source;
+    }
+
     private validate(): Result<string, string> {
-        if (this.src && this.thumbnail) {
+        if (!this.source || !this.thumbnail) {
             return Result.Error("No source or thumbnail specified");
         }
-        /*if (!isSourceValid(this.src)) {
+        if (!isSourceValid(this.source)) {
             return Result.Error("This video source is not yet allowed");
-        }*/
+        }
         if (!isThumbnailValid(this.thumbnail)) {
             return Result.Error("This thumbnail format is not yet allowed");
         }
-        /*if (this.sourceType === VideoSource.YOUTUBE && !isFile(this.src)) {
-            return Result.Error("This thumbnail format is not yet allowed");
+        if (
+            this.sourceType === VideoSource.INTERNAL &&
+            !isFile(this.source.split("/").pop())
+        ) {
+            return Result.Error("Source should be a local file name");
         }
         if (
-            this.sourceType === VideoSource.YOUTUBE &&
-            !isFile(this.thumbnail)
+            this.sourceType === VideoSource.INTERNAL &&
+            !isFile(this.thumbnail.split("/").pop())
         ) {
             return Result.Error("Source thumbnail should be a local file name");
-        }*/
+        }
         return Result.Ok("Model Valid");
+    }
+
+    static canAccessVideo(
+        video: Video,
+        userId: string
+    ): Result<string, string> {
+        const isVideoAuthor = userId === video.publisherId;
+        const canAccessDraftVideo = video.draft && isVideoAuthor;
+        const isVideoPublic = video.visibility !== Visibility.PUBLIC;
+
+        if (!canAccessDraftVideo || (!isVideoPublic && !isVideoAuthor)) {
+            return Result.Error("You cannot access this resource");
+        }
+        return Result.Ok("User can access to this video");
     }
 }

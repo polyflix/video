@@ -1,9 +1,4 @@
-import {
-    Injectable,
-    Logger,
-    NotFoundException,
-    UnprocessableEntityException
-} from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { DefaultVideoParams, VideoParams } from "../filters/video.params";
 import { isYoutubeVideo, Video } from "../../domain/models/video.model";
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
@@ -12,9 +7,9 @@ import { ExternalVideoService } from "./external-video.service";
 import { InternalVideoService } from "./internal-video.service";
 import { VideoRepository } from "../../domain/ports/repositories/video.repository";
 import { ConfigService } from "@nestjs/config";
-import { UpdateVideoDto } from "../../application/dto/video-update.dto";
 import { google, youtube_v3 } from "googleapis";
-import { Option } from "@swan-io/boxed";
+import { Result } from "@swan-io/boxed";
+import { VideoUpdateDto } from "../../application/dto/video-update.dto";
 
 @Injectable()
 export class VideoService {
@@ -30,16 +25,14 @@ export class VideoService {
         private readonly internalVideoService: InternalVideoService
     ) {}
 
-    async create(video: VideoCreateDto): Promise<Video> {
-        // const model = await this.psqlVideoRepository.create(video);
-
+    async create(videoDTO: VideoCreateDto): Promise<Video> {
         let newVideo: Video = null;
-        if (isYoutubeVideo(video.src)) {
+        if (isYoutubeVideo(videoDTO.source)) {
             this.logger.debug(`New video was detected to be a external video`);
-            newVideo = await this.internalVideoService.create(video);
+            newVideo = await this.internalVideoService.create(videoDTO);
         } else {
             this.logger.debug(`New video was detected to be an internal video`);
-            newVideo = await this.externalVideoService.create(video);
+            newVideo = await this.externalVideoService.create(videoDTO);
         }
 
         return newVideo;
@@ -64,23 +57,29 @@ export class VideoService {
         });
     }
 
-    async update(id: string, dto: UpdateVideoDto): Promise<Partial<Video>> {
-        const model: Option<Partial<Video>> = await this.videoRepository.update(
+    async update(
+        id: string,
+        videoDTO: VideoUpdateDto
+    ): Promise<Partial<Video>> {
+        const video: Video = this.videoApiMapper.apiToEntity(videoDTO);
+        const result: Result<Video, Error> = await this.videoRepository.update(
             id,
-            {
-                ...dto
+            video
+        );
+        const model = result.match({
+            Ok: (value) => value,
+            Error: (e) => {
+                throw new NotFoundException(e);
             }
-        );
-        return this.videoApiMapper.entityToApi(
-            model.match({
-                Some: (value: Video) => value,
-                None: () => {
-                    throw new UnprocessableEntityException(
-                        "This video cannot be updated right now, please try later"
-                    );
-                }
-            })
-        );
+        });
+        return model;
+    }
+
+    async canAccessVideo(
+        video: Video,
+        userId: string
+    ): Promise<Result<boolean, Error>> {
+        return this.videoRepository.canAccessVideo(video, userId);
     }
 
     async findMetadata(slug: string): Promise<youtube_v3.Schema$Video> {

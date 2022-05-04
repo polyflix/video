@@ -25,7 +25,7 @@ export class ExternalVideoService {
     async create(videoCreateDto: VideoCreateDto): Promise<Video> {
         videoCreateDto.sourceType = VideoSource.YOUTUBE;
         const video = this.videoApiMapper.apiToEntity(videoCreateDto);
-        video.source = getYoutubeVideoId(video.src).match({
+        video.source = getYoutubeVideoId(video.source).match({
             Some: (value) => {
                 this.logger.debug(`New video source is ${video.source}`);
                 return value;

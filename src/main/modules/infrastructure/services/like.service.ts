@@ -1,11 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { VideoService } from "./video.service";
-import { PsqlLikeRepository } from "../adapters/repositories/psql-like.repository";
 import { LikeApiMapper } from "../adapters/mappers/like.api.mapper";
 import { Like } from "../../domain/models/like.model";
-import { Connection } from "typeorm";
-import { Video } from "../../domain/models/video.model";
-import { VideoRepository } from "../../domain/ports/repositories/video.repository";
 import { LikeRepository } from "../../domain/ports/repositories/like.repository";
 import { LikeDto } from "../../application/dto/like.dto";
 

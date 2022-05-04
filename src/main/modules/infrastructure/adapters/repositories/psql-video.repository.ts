@@ -1,15 +1,12 @@
-import { isYoutubeVideo, Video } from "../../../domain/models/video.model";
+import { Video } from "../../../domain/models/video.model";
 import { Option, Result } from "@swan-io/boxed";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, SelectQueryBuilder, UpdateResult } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 import { VideoRepository } from "../../../domain/ports/repositories/video.repository";
 import { VideoEntityMapper } from "../mappers/video.entity.mapper";
 import { VideoEntity } from "./entities/video.entity";
-import { VideoCreateDto } from "src/main/modules/application/dto/video-create.dto";
 import { DefaultVideoParams, VideoParams } from "../../filters/video.params";
 import { VideoFilter } from "../../filters/video.filter";
-import { VideoApiMapper } from "../mappers/video.api.mapper";
-import { UpdateVideoDto } from "../../../application/dto/video-update.dto";
 
 export class PsqlVideoRepository extends VideoRepository {
     constructor(
@@ -55,28 +52,24 @@ export class PsqlVideoRepository extends VideoRepository {
 
     async findOne(slug: string): Promise<Option<Video>> {
         this.logger.log(`Find one video with slug ${slug}`);
-        try {
-            const result = await this.videoRepo.findOne({
-                where: { slug }
-            });
-            if (result) {
-                return Option.Some(this.videoEntityMapper.entityToApi(result));
-            }
-            return Option.None();
-        } catch (e) {
-            return Option.None();
+        const result = await this.videoRepo.findOne({
+            where: { slug }
+        });
+        if (result) {
+            return Option.Some(this.videoEntityMapper.entityToApi(result));
         }
+        return Option.None();
     }
 
-    async update(
-        slug: string,
-        video: UpdateVideoDto
-    ): Promise<Option<Partial<Video>>> {
+    async update(slug: string, video: Video): Promise<Result<Video, Error>> {
+        this.logger.log(`Update a video with slug ${video.slug}`);
         try {
-            await this.videoRepo.update(slug, video);
-            return Option.Some(video);
+            const result = await this.videoRepo.save(
+                this.videoEntityMapper.apiToEntity(video)
+            );
+            return Result.Ok(this.videoEntityMapper.entityToApi(result));
         } catch (e) {
-            return Option.None();
+            return Result.Error(e);
         }
     }
 
@@ -84,5 +77,37 @@ export class PsqlVideoRepository extends VideoRepository {
         alias: string
     ): Promise<SelectQueryBuilder<VideoEntity>> {
         return this.videoRepo.createQueryBuilder(alias);
+    }
+
+    async canAccessVideo(
+        video: Video,
+        userId: string
+    ): Promise<Result<boolean, Error>> {
+        try {
+            const hasAccess: [] = await this.videoRepo.query(
+                `
+                SELECT v.id as video_id, v."publisherId" as vid_publisher, col.id as col_id, col."publisherId" as col_publisher
+                FROM video v
+                LEFT JOIN collection_videos_video col_vid ON col_vid."videoId" = v.id
+                LEFT JOIN collection col ON col.id = col_vid."collectionId"
+                LEFT JOIN course_collections_collection cr_col ON col.id = cr_col."collectionId"
+                LEFT JOIN course cr ON cr_col."courseId" = cr.id
+                LEFT JOIN course_path_join cpj on cr.id = cpj."courseId"
+                LEFT JOIN path p on cpj."pathId" = p.id
+                WHERE v.id = $1
+                AND (
+                        col."publisherId" = $2 OR
+                        cr."publisherId" = $2 OR
+                        p."publisherId" = $2
+                )`,
+                [video.slug, userId]
+            );
+            if (hasAccess.length > 0) {
+                return Result.Ok(true);
+            }
+            Result.Error(false);
+        } catch (e) {
+            return Result.Error(e);
+        }
     }
 }

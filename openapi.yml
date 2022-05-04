@@ -235,3 +235,33 @@ paths:
           description: Resource not found
       tags:
         - Video
+  '/video/{slug}/token':
+    get:
+      operationId: videocontroller-videoPSU
+      summary: Get a MinIO PSU token for video by slug
+      description: Get a MinIO PSU token for video by slug
+      parameters:
+        - name: slug
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Resource not found
+        '418':
+          description: Cannot get a token from an external video
+        '401':
+          description: You cannot access this video or You cannot create a token for this video
+      tags:
+        - Video
+      security:
+        - bearer: []
+    parameters:
+      - schema:
+          type: string
+        name: slug
+        in: path
+        required: true

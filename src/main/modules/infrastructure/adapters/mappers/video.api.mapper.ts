@@ -6,15 +6,26 @@ import { Video, VideoProps } from "../../../domain/models/video.model";
 @Injectable()
 export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
     apiToEntity(apiModel: VideoResponse): Video {
-        // TODO WARN
-        const entity = Video.create(Object.assign(new VideoProps(), apiModel));
-        Object.assign(entity, apiModel);
-        return entity;
+        const videoProps: VideoProps = {
+            slug: apiModel.slug,
+            title: apiModel.title,
+            description: apiModel.description,
+            thumbnail: apiModel.thumbnail,
+            publisherId: apiModel.publisherId,
+            visibility: apiModel.visibility,
+            draft: apiModel.draft,
+            likes: apiModel.likes,
+            views: apiModel.views,
+            sourceType: apiModel.sourceType,
+            source: apiModel.source,
+            createdAt: apiModel.createdAt,
+            updatedAt: apiModel.updatedAt
+        };
+        return Video.create(Object.assign(new VideoProps(), videoProps));
     }
 
     entityToApi(entity: Video): VideoResponse {
         const video = new VideoResponse();
-        Object.assign(video, entity);
-        return video;
+        return Object.assign(video, entity);
     }
 }

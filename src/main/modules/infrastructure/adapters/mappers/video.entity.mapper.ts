@@ -6,25 +6,38 @@ import { VideoEntity } from "../repositories/entities/video.entity";
 @Injectable()
 export class VideoEntityMapper extends AbstractMapper<VideoEntity, Video> {
     apiToEntity(apiModel: Video): VideoEntity {
-        const entity = new VideoEntity();
-        Object.assign(entity, apiModel);
-        return entity;
+        const entity: VideoEntity = {
+            slug: apiModel.slug,
+            title: apiModel.title,
+            description: apiModel.description,
+            thumbnail: apiModel.thumbnail,
+            publisherId: apiModel.publisherId,
+            visibility: apiModel.visibility,
+            draft: apiModel.draft,
+            likes: apiModel.likes,
+            views: apiModel.views,
+            sourceType: apiModel.sourceType,
+            source: apiModel.source
+        };
+        return Object.assign(new VideoEntity(), entity);
     }
 
     entityToApi(entity: VideoEntity): Video {
-        // TODO WARN
         const videoProps: VideoProps = {
-            likes: entity.likes,
-            source: "",
-            sourceType: "",
-            src: "",
-            thumbnail: entity.thumbnail,
-            views: 0,
             slug: entity.slug,
-            description: entity.description
+            title: entity.title,
+            description: entity.description,
+            thumbnail: entity.thumbnail,
+            publisherId: entity.publisherId,
+            visibility: entity.visibility,
+            draft: entity.draft,
+            likes: entity.likes,
+            views: entity.views,
+            sourceType: entity.sourceType,
+            source: entity.source,
+            createdAt: entity.createdAt,
+            updatedAt: entity.updatedAt
         };
-        const video = Video.create(videoProps);
-        Object.assign(video, entity);
-        return video;
+        return Video.create(Object.assign(new VideoProps(), videoProps));
     }
 }

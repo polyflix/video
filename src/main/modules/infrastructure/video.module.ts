@@ -18,6 +18,7 @@ import { PsqlLikeRepository } from "./adapters/repositories/psql-like.repository
 import { LikeEntityMapper } from "./adapters/mappers/like.entity.mapper";
 import { LikeApiMapper } from "./adapters/mappers/like.api.mapper";
 import { LikeEntity } from "./adapters/repositories/entities/like.entity";
+import { TokenService } from "./services/token.service";
 
 @Module({
     controllers: [
@@ -43,7 +44,8 @@ import { LikeEntity } from "./adapters/repositories/entities/like.entity";
         LikeEntityMapper,
         LikeApiMapper,
         ExternalVideoService,
-        InternalVideoService
+        InternalVideoService,
+        TokenService
     ]
 })
 export class VideoModule {}

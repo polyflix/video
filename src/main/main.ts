@@ -33,7 +33,7 @@ async function bootstrap() {
 
     const port = config["server"]["port"] || 3000;
     app.connectMicroservice(kafkaConfig(config["kafka"]));
-    if (!ISLOCAL) {
+    if (ISLOCAL) {
         app.startAllMicroservices();
     } else {
         await app.startAllMicroservices();
