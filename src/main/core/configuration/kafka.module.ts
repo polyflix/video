@@ -1,22 +1,19 @@
 import { Global, Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { ClientProxyFactory } from "@nestjs/microservices";
-import { kafkaConfig, KAFKA_CLIENT } from "src/main/config/kafka.config";
-
+import {
+    KafkaModule as PolyflixKafkaModule,
+    kafkaConfig
+} from "@polyflix/x-utils";
 @Global()
 @Module({
-    providers: [
-        {
-            provide: KAFKA_CLIENT,
+    imports: [
+        PolyflixKafkaModule.register({
             useFactory: (configService: ConfigService) => {
-                return ClientProxyFactory.create(
-                    kafkaConfig(configService.get("kafka"))
-                );
+                return kafkaConfig(configService.get("kafka"));
             },
             inject: [ConfigService]
-        }
+        })
     ],
-
-    exports: [KAFKA_CLIENT]
+    exports: [PolyflixKafkaModule]
 })
 export class KafkaModule {}

@@ -1,8 +1,8 @@
 import { ValidationPipe, VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { kafkaConfig } from "./config/kafka.config";
-import { loadConfiguration } from "./config/loader.config";
+import { kafkaConfig } from "@polyflix/x-utils";
+import { ISLOCAL, loadConfiguration } from "./config/loader.config";
 import { logger } from "./config/logger.config";
 import { configureOTel } from "./config/tracing.config";
 
@@ -33,7 +33,11 @@ async function bootstrap() {
 
     const port = config["server"]["port"] || 3000;
     app.connectMicroservice(kafkaConfig(config["kafka"]));
-    await app.startAllMicroservices();
+    if (!ISLOCAL) {
+        app.startAllMicroservices();
+    } else {
+        await app.startAllMicroservices();
+    }
 
     await app.listen(port, () => {
         logger.log(`Server listening on port ${port}`, "NestApplication");

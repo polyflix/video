@@ -1,5 +1,4 @@
 import { Option, Result } from "@swan-io/boxed";
-import { Expose } from "src/main/core/decorators/expose.decorator";
 import { VideoInvalidError } from "../errors/video-invalid.error";
 
 const YOUTUBE_MATCH_REGEX =
@@ -43,25 +42,21 @@ export class VideoProps {
     /**
      * This is an unique slug for the video
      */
-    @Expose()
     slug: string;
 
     /**
      * Description of the video, it can contain a lot of data
      */
-    @Expose()
     description: string;
 
     /**
      * Number of likes for a video
      */
-    @Expose()
     likes: number;
 
     /**
      * Number of views for a video
      */
-    @Expose()
     views: number;
 
     thumbnail: string;
