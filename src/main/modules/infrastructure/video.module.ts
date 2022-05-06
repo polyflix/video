@@ -19,6 +19,12 @@ import { LikeEntityMapper } from "./adapters/mappers/like.entity.mapper";
 import { LikeApiMapper } from "./adapters/mappers/like.api.mapper";
 import { LikeEntity } from "./adapters/repositories/entities/like.entity";
 import { TokenService } from "./services/token.service";
+import { WatchtimeEntity } from "./adapters/repositories/entities/watchtime.entity";
+import { WatchtimeRepository } from "../domain/ports/repositories/watchtime.repository";
+import { PsqlWatchtimeRepository } from "./adapters/repositories/psql-watchtime.repository";
+import { WatchtimeApiMapper } from "./adapters/mappers/watchtime.api.mapper";
+import { WatchtimeEntityMapper } from "./adapters/mappers/watchtime.entity.mapper";
+import { WatchtimeService } from "./services/watchtime.service";
 import { PresignedUrlApiMapper } from "./adapters/mappers/psu.api.mapper";
 
 @Module({
@@ -29,8 +35,7 @@ import { PresignedUrlApiMapper } from "./adapters/mappers/psu.api.mapper";
     ],
     exports: [VideoService, LikeService],
     imports: [
-        TypeOrmModule.forFeature([VideoEntity]),
-        TypeOrmModule.forFeature([LikeEntity])
+        TypeOrmModule.forFeature([VideoEntity, LikeEntity, WatchtimeEntity])
     ],
     providers: [
         VideoService,
@@ -39,15 +44,19 @@ import { PresignedUrlApiMapper } from "./adapters/mappers/psu.api.mapper";
         PsqlLikeRepository,
         VideoFilter,
         { provide: VideoRepository, useClass: PsqlVideoRepository },
+        { provide: WatchtimeRepository, useClass: PsqlWatchtimeRepository },
         { provide: LikeRepository, useClass: PsqlLikeRepository },
         VideoApiMapper,
         VideoEntityMapper,
+        WatchtimeApiMapper,
+        WatchtimeEntityMapper,
         LikeEntityMapper,
         LikeApiMapper,
         ExternalVideoService,
         InternalVideoService,
         TokenService,
-        PresignedUrlApiMapper
+        PresignedUrlApiMapper,
+        WatchtimeService
     ]
 })
 export class VideoModule {}

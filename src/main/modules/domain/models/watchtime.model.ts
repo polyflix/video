@@ -7,7 +7,7 @@ export class Watchtime {
     /**
      * id of the user that liked the video
      */
-    userId: string;
+    userId?: string;
 
     /**
      * watchtime in seconds
@@ -15,7 +15,7 @@ export class Watchtime {
     watchedSeconds: number;
 
     /**
-     * watchtime in percent
+     * watchtime in percent between 0 and 1
      */
     watchedPercent: number;
 

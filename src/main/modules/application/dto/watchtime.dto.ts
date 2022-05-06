@@ -1,15 +1,25 @@
-import { IsBoolean, IsNotEmpty, IsString } from "class-validator";
+import {
+    IsBoolean,
+    IsNotEmpty,
+    IsNumber,
+    IsString,
+    Max,
+    Min
+} from "class-validator";
 
 export class WatchtimeDto {
     @IsNotEmpty()
     @IsString()
     videoId: string;
 
-    userId: string;
-
     @IsNotEmpty()
+    @IsNumber()
+    @Min(0)
     watchedSeconds: number;
 
+    @IsNumber()
+    @Min(0)
+    @Max(1)
     @IsNotEmpty()
     watchedPercent: number;
 

@@ -1,16 +1,25 @@
 import {
+    Body,
     Controller,
     Logger,
     Param,
     Patch,
+    Post,
     UnprocessableEntityException
 } from "@nestjs/common";
 import { MockUser } from "../../../../temp.mock";
 import { LikeService } from "../services/like.service";
+import { WatchtimeDto } from "../../application/dto/watchtime.dto";
+import { WatchtimeService } from "../services/watchtime.service";
+import { VideoService } from "../services/video.service";
 
 @Controller("stats")
 export class StatsVideoController {
-    constructor(private readonly likeService: LikeService) {}
+    constructor(
+        private readonly videoService: VideoService,
+        private readonly likeService: LikeService,
+        private readonly watchtimeService: WatchtimeService
+    ) {}
 
     private readonly logger = new Logger(StatsVideoController.name);
 
@@ -29,5 +38,13 @@ export class StatsVideoController {
                 `Cannot like video, userId: ${user.id}, error: ${e}`
             );
         }
+    }
+
+    @Post("video/watchtime")
+    async watchTime(
+        @MockUser() user: any,
+        @Body() updateWatchTimeDto: WatchtimeDto
+    ): Promise<void> {
+        await this.watchtimeService.syncUserVideoMeta(user, updateWatchTimeDto);
     }
 }

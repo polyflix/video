@@ -103,20 +103,23 @@ export class PsqlVideoRepository extends VideoRepository {
         try {
             const hasAccess: [] = await this.videoRepo.query(
                 `
-                SELECT v.id as video_id, v."publisherId" as vid_publisher, col.id as col_id, col."publisherId" as col_publisher
-                FROM video v
-                LEFT JOIN collection_videos_video col_vid ON col_vid."videoId" = v.id
-                LEFT JOIN collection col ON col.id = col_vid."collectionId"
-                LEFT JOIN course_collections_collection cr_col ON col.id = cr_col."collectionId"
-                LEFT JOIN course cr ON cr_col."courseId" = cr.id
-                LEFT JOIN course_path_join cpj on cr.id = cpj."courseId"
-                LEFT JOIN path p on cpj."pathId" = p.id
-                WHERE v.id = $1
-                AND (
-                        col."publisherId" = $2 OR
-                        cr."publisherId" = $2 OR
-                        p."publisherId" = $2
-                )`,
+                    SELECT v.id as video_id,
+                           v."publisherId" as vid_publisher,
+                           col.id as col_id,
+                           col."publisherId" as col_publisher
+                    FROM video v
+                             LEFT JOIN collection_videos_video col_vid ON col_vid."videoId" = v.id
+                             LEFT JOIN collection col ON col.id = col_vid."collectionId"
+                             LEFT JOIN course_collections_collection cr_col ON col.id = cr_col."collectionId"
+                             LEFT JOIN course cr ON cr_col."courseId" = cr.id
+                             LEFT JOIN course_path_join cpj on cr.id = cpj."courseId"
+                             LEFT JOIN path p on cpj."pathId" = p.id
+                    WHERE v.id = $1
+                      AND (
+                                col."publisherId" = $2 OR
+                                cr."publisherId" = $2 OR
+                                p."publisherId" = $2
+                        )`,
                 [video.slug, userId]
             );
             if (hasAccess.length > 0) {

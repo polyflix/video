@@ -1,6 +1,5 @@
 import { Column, Entity, JoinColumn, OneToMany } from "typeorm";
 import { VideoSource } from "../../../../domain/models/video.model";
-import { Column, Entity } from "typeorm";
 import { BaseModel } from "./base.model";
 import { Visibility } from "./content.model";
 import { WatchtimeEntity } from "./watchtime.entity";
@@ -37,10 +36,7 @@ export class VideoEntity extends BaseModel {
     @Column()
     source: string;
 
-    @Column({ type: "text" })
-    thumbnail: string;
-
     @OneToMany(() => WatchtimeEntity, (watchtime) => watchtime.video)
     @JoinColumn({ name: "watchtime" })
-    watchtime?: WatchtimeEntity;
+    watchDatas?: Promise<WatchtimeEntity[]>;
 }

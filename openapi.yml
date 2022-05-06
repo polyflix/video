@@ -265,3 +265,27 @@ paths:
         name: slug
         in: path
         required: true
+
+  /stats/video/watchtime:
+    post:
+      summary: ''
+      operationId: post-stats-video-watchtime
+      responses:
+        '201':
+          description: Created
+        '422':
+          description: Unprocessable Entity (WebDAV)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                videoId:
+                  type: string
+                watchedSeconds:
+                  type: integer
+                watchedPercent:
+                  type: integer
+                isWatched:
+                  type: boolean

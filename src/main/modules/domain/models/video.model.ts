@@ -74,6 +74,7 @@ export class VideoProps {
 
 export class Video {
     protected readonly logger = new Logger(Video.name);
+
     private constructor(
         public slug: string,
         public title: string,
