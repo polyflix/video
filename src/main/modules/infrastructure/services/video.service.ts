@@ -10,9 +10,16 @@ import { ConfigService } from "@nestjs/config";
 import { google, youtube_v3 } from "googleapis";
 import { Result } from "@swan-io/boxed";
 import { VideoUpdateDto } from "../../application/dto/video-update.dto";
+import {
+    InjectKafkaClient,
+    PolyflixKafkaMessage,
+    TriggerType
+} from "@polyflix/x-utils";
+import { ClientKafka } from "@nestjs/microservices";
 
 @Injectable()
 export class VideoService {
+    private KAFKA_VIDEO_TOPIC: string;
     protected readonly logger = new Logger(VideoService.name);
     private readonly YOUTUBE_KEY =
         this.configService.get<string>("youtube.key");
@@ -22,8 +29,12 @@ export class VideoService {
         private readonly configService: ConfigService,
         private readonly videoApiMapper: VideoApiMapper,
         private readonly externalVideoService: ExternalVideoService,
-        private readonly internalVideoService: InternalVideoService
-    ) {}
+        private readonly internalVideoService: InternalVideoService,
+        @InjectKafkaClient() private readonly kafkaClient: ClientKafka
+    ) {
+        this.KAFKA_VIDEO_TOPIC =
+            this.configService.get<string>("kafka.topics.video");
+    }
 
     async create(videoDTO: VideoCreateDto): Promise<Video> {
         let newVideo: Video = null;
@@ -34,6 +45,17 @@ export class VideoService {
             this.logger.debug(`New video was detected to be an internal video`);
             newVideo = await this.externalVideoService.create(videoDTO);
         }
+
+        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
+            this.KAFKA_VIDEO_TOPIC,
+            {
+                key: newVideo.slug,
+                value: {
+                    trigger: TriggerType.CREATE,
+                    payload: newVideo
+                }
+            }
+        );
 
         return newVideo;
     }
@@ -66,13 +88,47 @@ export class VideoService {
             id,
             video
         );
-        const model = result.match({
+        const model: Video = result.match({
             Ok: (value) => value,
             Error: (e) => {
                 throw new NotFoundException(e);
             }
         });
+
+        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
+            this.KAFKA_VIDEO_TOPIC,
+            {
+                key: model.slug,
+                value: {
+                    trigger: TriggerType.UPDATE,
+                    payload: model
+                }
+            }
+        );
         return model;
+    }
+
+    async delete(slug: string): Promise<void> {
+        const result: Result<Video, Error> = await this.videoRepository.delete(
+            slug
+        );
+        const model: Video = result.match({
+            Ok: (value) => value,
+            Error: (e) => {
+                throw new NotFoundException(e);
+            }
+        });
+
+        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
+            this.KAFKA_VIDEO_TOPIC,
+            {
+                key: model.slug,
+                value: {
+                    trigger: TriggerType.DELETE,
+                    payload: model
+                }
+            }
+        );
     }
 
     async canAccessVideo(

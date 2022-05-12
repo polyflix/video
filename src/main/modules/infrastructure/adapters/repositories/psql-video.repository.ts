@@ -7,6 +7,7 @@ import { VideoEntityMapper } from "../mappers/video.entity.mapper";
 import { VideoEntity } from "./entities/video.entity";
 import { DefaultVideoParams, VideoParams } from "../../filters/video.params";
 import { VideoFilter } from "../../filters/video.filter";
+import { NotFoundException } from "@nestjs/common";
 
 export class PsqlVideoRepository extends VideoRepository {
     constructor(
@@ -68,6 +69,22 @@ export class PsqlVideoRepository extends VideoRepository {
                 this.videoEntityMapper.apiToEntity(video)
             );
             return Result.Ok(this.videoEntityMapper.entityToApi(result));
+        } catch (e) {
+            return Result.Error(e);
+        }
+    }
+
+    async delete(slug: string): Promise<Result<Video, Error>> {
+        const video = await this.findOne(slug);
+        this.logger.log(`Delete a video with slug ${slug}`);
+        try {
+            await this.videoRepo.delete({
+                slug
+            });
+            if (video.isSome()) {
+                return Result.Ok(video.get());
+            }
+            throw new NotFoundException("Video not found");
         } catch (e) {
             return Result.Error(e);
         }

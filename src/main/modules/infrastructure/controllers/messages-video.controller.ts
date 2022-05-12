@@ -71,6 +71,7 @@ export class MessageVideoController {
             new VideoResponse(),
             message.payload
         );
+
         switch (message.trigger) {
             case TriggerType.CREATE:
                 this.videoService.create(videoResponse);
@@ -79,7 +80,7 @@ export class MessageVideoController {
                 this.videoService.update(videoResponse.slug, videoResponse);
                 break;
             case TriggerType.DELETE:
-                // TODO
+                this.videoService.delete(videoResponse.slug);
                 break;
         }
     }
