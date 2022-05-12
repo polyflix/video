@@ -18,6 +18,12 @@ import {
 import { ClientKafka } from "@nestjs/microservices";
 import * as urlSlug from "url-slug";
 import { VideoPSU } from "../../domain/models/presigned-url.entity";
+import {
+    InjectKafkaClient,
+    PolyflixKafkaMessage,
+    TriggerType
+} from "@polyflix/x-utils";
+import { ClientKafka } from "@nestjs/microservices";
 
 @Injectable()
 export class VideoService {
