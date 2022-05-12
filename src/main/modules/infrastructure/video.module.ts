@@ -19,6 +19,13 @@ import { LikeEntityMapper } from "./adapters/mappers/like.entity.mapper";
 import { LikeApiMapper } from "./adapters/mappers/like.api.mapper";
 import { LikeEntity } from "./adapters/repositories/entities/like.entity";
 import { TokenService } from "./services/token.service";
+import { UserController } from "./controllers/user.controller";
+import { PsqlUserRepository } from "./adapters/repositories/psql-user.repository";
+import { UserRepository } from "../domain/ports/repositories/user.repository";
+import { UserEntityMapper } from "./adapters/mappers/user.entity.mapper";
+import { UserApiMapper } from "./adapters/mappers/user.api.mapper";
+import { UserService } from "./services/user.service";
+import { UserEntity } from "./adapters/repositories/entities/user.entity";
 import { WatchtimeEntity } from "./adapters/repositories/entities/watchtime.entity";
 import { WatchtimeRepository } from "../domain/ports/repositories/watchtime.repository";
 import { WatchtimeApiMapper } from "./adapters/mappers/watchtime.api.mapper";
@@ -31,27 +38,38 @@ import { WatchtimeService } from "./services/watchtime.service";
     controllers: [
         CrudVideoController,
         StatsVideoController,
-        MessageVideoController
+        MessageVideoController,
+        UserController
     ],
     exports: [VideoService, LikeService],
     imports: [
-        TypeOrmModule.forFeature([VideoEntity, LikeEntity, WatchtimeEntity])
+        TypeOrmModule.forFeature([
+            VideoEntity,
+            LikeEntity,
+            UserEntity,
+            WatchtimeEntity
+        ])
     ],
     providers: [
         VideoService,
         LikeService,
+        UserService,
         PsqlVideoRepository,
         PsqlLikeRepository,
+        PsqlUserRepository,
         VideoFilter,
         { provide: VideoRepository, useClass: PsqlVideoRepository },
         { provide: WatchtimeRepository, useClass: PsqlWatchtimeRepository },
         { provide: LikeRepository, useClass: PsqlLikeRepository },
+        { provide: UserRepository, useClass: PsqlUserRepository },
         VideoApiMapper,
         VideoEntityMapper,
         WatchtimeApiMapper,
         WatchtimeEntityMapper,
         LikeEntityMapper,
         LikeApiMapper,
+        UserEntityMapper,
+        UserApiMapper,
         ExternalVideoService,
         InternalVideoService,
         TokenService,
