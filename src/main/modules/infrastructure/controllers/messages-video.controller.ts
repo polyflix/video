@@ -74,7 +74,7 @@ export class MessageVideoController {
 
         switch (message.trigger) {
             case TriggerType.CREATE:
-                this.videoService.create(videoResponse);
+                this.videoService.create(videoResponse, null);
                 break;
             case TriggerType.UPDATE:
                 this.videoService.update(videoResponse.slug, videoResponse);

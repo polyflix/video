@@ -19,6 +19,7 @@ import { LikeEntityMapper } from "./adapters/mappers/like.entity.mapper";
 import { LikeApiMapper } from "./adapters/mappers/like.api.mapper";
 import { LikeEntity } from "./adapters/repositories/entities/like.entity";
 import { TokenService } from "./services/token.service";
+import { PresignedUrlApiMapper } from "./adapters/mappers/psu.api.mapper";
 
 @Module({
     controllers: [
@@ -45,7 +46,8 @@ import { TokenService } from "./services/token.service";
         LikeApiMapper,
         ExternalVideoService,
         InternalVideoService,
-        TokenService
+        TokenService,
+        PresignedUrlApiMapper
     ]
 })
 export class VideoModule {}

@@ -16,6 +16,8 @@ import {
     TriggerType
 } from "@polyflix/x-utils";
 import { ClientKafka } from "@nestjs/microservices";
+import * as urlSlug from "url-slug";
+import { VideoPSU } from "../../domain/models/presigned-url.entity";
 
 @Injectable()
 export class VideoService {
@@ -36,14 +38,23 @@ export class VideoService {
             this.configService.get<string>("kafka.topics.video");
     }
 
-    async create(videoDTO: VideoCreateDto): Promise<Video> {
+    async create(
+        videoCreateDTO: VideoCreateDto,
+        meId: string
+    ): Promise<Video & VideoPSU> {
         let newVideo: Video = null;
+
+        const videoDTO: VideoCreateDto & { slug: string } = {
+            ...videoCreateDTO,
+            slug: urlSlug.convert(videoCreateDTO.title)
+        };
+
         if (isYoutubeVideo(videoDTO.source)) {
-            this.logger.debug(`New video was detected to be a external video`);
-            newVideo = await this.internalVideoService.create(videoDTO);
+            this.logger.log(`New video was detected to be a external video`);
+            newVideo = await this.externalVideoService.create(videoDTO, meId);
         } else {
-            this.logger.debug(`New video was detected to be an internal video`);
-            newVideo = await this.externalVideoService.create(videoDTO);
+            this.logger.log(`New video was detected to be an internal video`);
+            newVideo = await this.internalVideoService.create(videoDTO, meId);
         }
 
         this.kafkaClient.emit<string, PolyflixKafkaMessage>(

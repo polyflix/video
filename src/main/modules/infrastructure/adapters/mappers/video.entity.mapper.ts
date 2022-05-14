@@ -17,7 +17,7 @@ export class VideoEntityMapper extends AbstractMapper<VideoEntity, Video> {
             likes: apiModel.likes,
             views: apiModel.views,
             sourceType: apiModel.sourceType,
-            source: apiModel.source
+            source: apiModel.sourceId
         };
         return Object.assign(new VideoEntity(), entity);
     }

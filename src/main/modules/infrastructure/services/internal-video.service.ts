@@ -1,9 +1,19 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { Result } from "@swan-io/boxed";
+import {
+    MINIO_THUMBNAIL_FILE_NAME,
+    MINIO_VIDEO_FILE_NAME
+} from "src/main/core/constants/video.constant";
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
-import { Video, VideoSource } from "../../domain/models/video.model";
+import { VideoPSU } from "../../domain/models/presigned-url.entity";
+import {
+    Video,
+    VideoSource,
+    formatMinIOFilename
+} from "../../domain/models/video.model";
 import { VideoApiMapper } from "../adapters/mappers/video.api.mapper";
 import { PsqlVideoRepository } from "../adapters/repositories/psql-video.repository";
+import { TokenService } from "./token.service";
 
 @Injectable()
 export class InternalVideoService {
@@ -11,12 +21,36 @@ export class InternalVideoService {
 
     constructor(
         private readonly psqlVideoRepository: PsqlVideoRepository,
-        private readonly videoApiMapper: VideoApiMapper
+        private readonly videoApiMapper: VideoApiMapper,
+        private readonly tokenService: TokenService
     ) {}
 
-    async create(videoCreateDto: VideoCreateDto): Promise<Video> {
-        videoCreateDto.sourceType = VideoSource.INTERNAL;
-        const video: Video = this.videoApiMapper.apiToEntity(videoCreateDto);
+    async create(
+        videoCreateDto: VideoCreateDto & { slug: string },
+        meId: string
+    ): Promise<Video & VideoPSU> {
+        const videoFileExtention = videoCreateDto.source.split(".")[1];
+        const thumbnailFileExtention = videoCreateDto.thumbnail.split(".")[1];
+
+        const outputVideoFilename = `${MINIO_VIDEO_FILE_NAME}.${videoFileExtention}`;
+        const outputThumbnailFilename = `${MINIO_THUMBNAIL_FILE_NAME}.${thumbnailFileExtention}`;
+
+        const source = formatMinIOFilename(
+            videoCreateDto.slug,
+            outputVideoFilename
+        );
+        const thumbnail = formatMinIOFilename(
+            videoCreateDto.slug,
+            outputThumbnailFilename
+        );
+
+        const video: Video = this.videoApiMapper.apiToEntity({
+            ...videoCreateDto,
+            sourceType: VideoSource.INTERNAL,
+            thumbnail,
+            source,
+            ...(meId && { publisherId: meId })
+        });
 
         const result: Result<Video, Error> =
             await this.psqlVideoRepository.create(video);
@@ -27,6 +61,22 @@ export class InternalVideoService {
                 throw new NotFoundException(e);
             }
         });
-        return model;
+
+        const videoPutPsu: any = await this.tokenService.putVideoPresignedUrl(
+            video.slug,
+            outputVideoFilename
+        );
+
+        const thumbnailPutPsu: any =
+            await this.tokenService.putVideoPresignedUrl(
+                video.slug,
+                outputThumbnailFilename
+            );
+
+        return {
+            ...model,
+            videoPutPsu,
+            thumbnailPutPsu
+        } as Video & VideoPSU;
     }
 }

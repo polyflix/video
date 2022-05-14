@@ -2,12 +2,11 @@ import { Visibility } from "../../infrastructure/adapters/repositories/entities/
 import { VideoSource } from "../../domain/models/video.model";
 import { PresignedUrlResponse } from "../../../core/types/presigned-url.type";
 
-export type CreatedVideo = VideoResponse & VideoPSU;
-
-export type VideoPSU = {
+export type VideoPsuResponse = {
     thumbnailPutPsu?: PresignedUrlResponse;
     videoPutPsu?: PresignedUrlResponse;
 };
+
 export class VideoResponse {
     slug: string;
 
@@ -35,7 +34,7 @@ export class VideoResponse {
 
     // availableLanguages?: SubtitleLanguages[];
 
-    sourceType: VideoSource;
+    sourceType?: VideoSource;
 
     source: string;
 

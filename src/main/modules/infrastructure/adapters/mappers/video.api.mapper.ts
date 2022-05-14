@@ -5,27 +5,56 @@ import { Video, VideoProps } from "../../../domain/models/video.model";
 
 @Injectable()
 export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
-    apiToEntity(apiModel: VideoResponse): Video {
-        const videoProps: VideoProps = {
-            slug: apiModel.slug,
+    apiToEntity(apiModel: Partial<VideoResponse>): Video {
+        const videoProps: Partial<VideoProps> = {
             title: apiModel.title,
             description: apiModel.description,
             thumbnail: apiModel.thumbnail,
-            publisherId: apiModel.publisherId,
             visibility: apiModel.visibility,
             draft: apiModel.draft,
-            likes: apiModel.likes,
-            views: apiModel.views,
-            sourceType: apiModel.sourceType,
-            source: apiModel.source,
-            createdAt: apiModel.createdAt,
-            updatedAt: apiModel.updatedAt
+            source: apiModel.source
         };
+        if (apiModel.slug) {
+            videoProps.slug = apiModel.slug;
+        }
+        if (apiModel.publisherId) {
+            videoProps.publisherId = apiModel.publisherId;
+        }
+        if (apiModel.likes) {
+            videoProps.likes = apiModel.likes;
+        }
+        if (apiModel.views) {
+            videoProps.views = apiModel.views;
+        }
+        if (apiModel.sourceType) {
+            videoProps.sourceType = apiModel.sourceType;
+        }
+        if (apiModel.createdAt) {
+            videoProps.createdAt = apiModel.createdAt;
+        }
+        if (apiModel.updatedAt) {
+            videoProps.updatedAt = apiModel.updatedAt;
+        }
+
         return Video.create(Object.assign(new VideoProps(), videoProps));
     }
 
     entityToApi(entity: Video): VideoResponse {
-        const video = new VideoResponse();
-        return Object.assign(video, entity);
+        const video: VideoResponse = {
+            slug: entity.slug,
+            title: entity.title,
+            description: entity.description,
+            thumbnail: entity.thumbnail,
+            publisherId: entity.publisherId,
+            visibility: entity.visibility,
+            draft: entity.draft,
+            likes: entity.likes,
+            views: entity.views,
+            sourceType: entity.sourceType,
+            source: entity.source,
+            createdAt: entity.createdAt,
+            updatedAt: entity.updatedAt
+        };
+        return Object.assign(new VideoResponse(), video);
     }
 }

@@ -27,10 +27,10 @@ export class PsqlVideoRepository extends VideoRepository {
         // TODO: Check whether slug is taken & generate a unique slug
         this.logger.log(`Create a video with slug ${video.slug}`);
 
+        const videoEntity: VideoEntity =
+            this.videoEntityMapper.apiToEntity(video);
         try {
-            const result = await this.videoRepo.save(
-                this.videoEntityMapper.apiToEntity(video)
-            );
+            const result = await this.videoRepo.save(videoEntity);
             return Result.Ok(this.videoEntityMapper.entityToApi(result));
         } catch (e) {
             return Result.Error(e);

@@ -59,9 +59,9 @@ export class VideoProps {
 
     draft: boolean;
 
-    likes: number;
+    likes?: number;
 
-    views: number;
+    views?: number;
 
     sourceType: VideoSource;
 
@@ -119,10 +119,15 @@ export class Video {
     set source(value) {
         this._source = value;
     }
+
     get source(): string {
         return this.sourceType === VideoSource.YOUTUBE
             ? `https://www.youtube.com/watch?v=${this._source}`
             : this._source;
+    }
+
+    get sourceId(): string {
+        return this._source;
     }
 
     private validate(): Result<string, string> {

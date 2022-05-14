@@ -2,14 +2,19 @@ import { PresignedUrlInvalidError } from "../errors/presigned-url-invalid.error"
 import { Result } from "@swan-io/boxed";
 import { Video, VideoSource } from "./video.model";
 
-export interface CreatePresignedUrlProps {
+export type VideoPSU = {
+    thumbnailPutPsu?: PresignedUrl;
+    videoPutPsu?: PresignedUrl;
+};
+
+export class PresignedUrlProps {
     tokenAccess: string;
 }
 
 export class PresignedUrl {
     private constructor(public tokenAccess: string) {}
 
-    static create(props: CreatePresignedUrlProps): PresignedUrl {
+    static create(props: PresignedUrlProps): PresignedUrl {
         const video = new PresignedUrl(props.tokenAccess);
 
         return video.validate().match({

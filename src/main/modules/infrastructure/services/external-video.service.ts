@@ -4,6 +4,7 @@ import {
     Logger,
     NotFoundException
 } from "@nestjs/common";
+import { Result } from "@swan-io/boxed";
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
 import {
     getYoutubeVideoId,
@@ -22,21 +23,29 @@ export class ExternalVideoService {
         private readonly videoApiMapper: VideoApiMapper
     ) {}
 
-    async create(videoCreateDto: VideoCreateDto): Promise<Video> {
-        videoCreateDto.sourceType = VideoSource.YOUTUBE;
-        const video = this.videoApiMapper.apiToEntity(videoCreateDto);
-        video.source = getYoutubeVideoId(video.source).match({
+    async create(videoCreateDto: VideoCreateDto, meId: string): Promise<Video> {
+        const source = getYoutubeVideoId(videoCreateDto.source).match({
             Some: (value) => {
-                this.logger.debug(`New video source is ${video.source}`);
+                this.logger.debug(
+                    `New video source is ${videoCreateDto.source}`
+                );
                 return value;
             },
             None: () => {
                 throw new BadRequestException("Invalid youtube URL");
             }
         });
+        const video: Video = this.videoApiMapper.apiToEntity({
+            ...videoCreateDto,
+            sourceType: VideoSource.YOUTUBE,
+            source,
+            ...(meId && { publisherId: meId })
+        });
 
-        const model = await this.psqlVideoRepository.create(video);
-        return model.match({
+        const result: Result<Video, Error> =
+            await this.psqlVideoRepository.create(video);
+
+        return result.match({
             Ok: (value) => value,
             Error: (e) => {
                 throw new NotFoundException(e);
