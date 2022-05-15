@@ -18,16 +18,11 @@ import {
 import { ClientKafka } from "@nestjs/microservices";
 import * as urlSlug from "url-slug";
 import { VideoPSU } from "../../domain/models/presigned-url.entity";
-import {
-    InjectKafkaClient,
-    PolyflixKafkaMessage,
-    TriggerType
-} from "@polyflix/x-utils";
-import { ClientKafka } from "@nestjs/microservices";
 
 @Injectable()
 export class VideoService {
     private KAFKA_VIDEO_TOPIC: string;
+    private KAFKA_SUBTITLE_TOPIC: string;
     protected readonly logger = new Logger(VideoService.name);
     private readonly YOUTUBE_KEY =
         this.configService.get<string>("youtube.key");
@@ -42,6 +37,9 @@ export class VideoService {
     ) {
         this.KAFKA_VIDEO_TOPIC =
             this.configService.get<string>("kafka.topics.video");
+        this.KAFKA_SUBTITLE_TOPIC = this.configService.get<string>(
+            "kafka.topics.subtitle"
+        );
     }
 
     async create(
@@ -65,6 +63,17 @@ export class VideoService {
 
         this.kafkaClient.emit<string, PolyflixKafkaMessage>(
             this.KAFKA_VIDEO_TOPIC,
+            {
+                key: newVideo.slug,
+                value: {
+                    trigger: TriggerType.CREATE,
+                    payload: newVideo
+                }
+            }
+        );
+
+        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
+            this.KAFKA_SUBTITLE_TOPIC,
             {
                 key: newVideo.slug,
                 value: {
