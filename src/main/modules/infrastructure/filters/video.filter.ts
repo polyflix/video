@@ -7,13 +7,18 @@ import {
     SortingTypeEnum
 } from "../../../core/helpers/abstract.filter";
 import { VideoParams } from "./video.params";
+import { Visibility } from "../adapters/repositories/entities/content.model";
+import { WatchtimeEntity } from "../adapters/repositories/entities/watchtime.entity";
 
 @Injectable()
 export class VideoFilter extends AbstractFilter<VideoEntity> {
     buildFilters(
         queryBuilder: SelectQueryBuilder<VideoEntity>,
-        params: VideoParams
+        params: VideoParams,
+        me: string,
+        isAdmin: boolean
     ): void {
+        let isMe = false;
         const exact = true;
 
         if (has(params, "title")) {
@@ -26,6 +31,13 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
                     title: `${params.title}%`
                 });
             }
+        }
+
+        if (has(params, "authorId")) {
+            isMe = me === params?.authorId;
+            queryBuilder.andWhere("video.publisherId = :publisherId", {
+                publisherId: params.authorId
+            });
         }
 
         if (has(params, "minViews")) {
@@ -44,14 +56,54 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
             queryBuilder.andWhere("video.slug = :slug", { slug: params.slug });
         }
 
-        /*VideoFilter.buildVisibilityFilters(
+        if (me && (has(params, "isWatching") || has(params, "isWatched"))) {
+            let userMetaCondition;
+
+            if (has(params, "isWatched") && !has(params, "isWatching")) {
+                userMetaCondition = "AND watchDatas.isWatched = true ";
+            } else if (has(params, "isWatching") && !has(params, "isWatched")) {
+                userMetaCondition = "AND watchDatas.isWatched = false ";
+            }
+
+            queryBuilder.innerJoinAndMapOne(
+                "video.watchtime",
+                WatchtimeEntity,
+                "watchDatas",
+                `watchDatas.userId = :userId AND watchDatas.videoId = video.slug ${
+                    userMetaCondition || ""
+                }`,
+                { userId: me }
+            );
+
+            queryBuilder.addGroupBy("video.slug");
+            queryBuilder.addGroupBy("watchDatas.userId");
+            queryBuilder.addGroupBy("watchDatas.videoId");
+        }
+
+        if (isMe || isAdmin) {
+            if (has(params, "visibility") || has(params, "draft")) {
+                VideoFilter.buildVisibilityFilters(
+                    queryBuilder,
+                    params.visibility,
+                    params.draft
+                );
+            }
+        } else {
+            VideoFilter.buildVisibilityFilters(
+                queryBuilder,
+                Visibility.PUBLIC,
+                false
+            );
+        }
+
+        VideoFilter.buildVisibilityFilters(
             queryBuilder,
             Visibility.PUBLIC,
             false
-        );*/
+        );
     }
-    //todo uncomment visibility when column added to entity
-    /*private static buildVisibilityFilters(
+
+    private static buildVisibilityFilters(
         queryBuilder: SelectQueryBuilder<VideoEntity>,
         visibility?: Visibility,
         draft?: boolean
@@ -66,7 +118,7 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
                 draft
             });
         }
-    }*/
+    }
 
     buildPaginationAndSort(
         queryBuilder: SelectQueryBuilder<VideoEntity>,
@@ -100,11 +152,26 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
         );
     }
 
+    buildWithUserMeta(
+        queryBuilder: SelectQueryBuilder<VideoEntity>,
+        me: string
+    ): void {
+        queryBuilder.leftJoinAndMapOne(
+            "video.watchtime",
+            WatchtimeEntity,
+            "watchDatas",
+            "watchDatas.userId = :userId",
+            { userId: me }
+        );
+    }
+
     totalCount(
         queryBuilder: SelectQueryBuilder<VideoEntity>,
-        params: VideoParams
+        params: VideoParams,
+        me: string,
+        isAdmin: boolean
     ): void {
-        this.buildFilters(queryBuilder, params);
+        this.buildFilters(queryBuilder, params, me, isAdmin);
         queryBuilder.select("COUNT(DISTINCT video.slug) AS total");
     }
 }

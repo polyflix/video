@@ -1,22 +1,24 @@
 import { Pagination } from "../../../core/types/pagination.type";
-import { IsOptional, IsString } from "class-validator";
+import { IsEnum, IsOptional, IsString } from "class-validator";
+import { Visibility } from "../adapters/repositories/entities/content.model";
 
 export const DefaultVideoParams: VideoParams = {
     page: 1,
-    pageSize: 10
-    //visibility: Visibility.PUBLIC
+    pageSize: 10,
+    visibility: Visibility.PUBLIC
 };
 
 export class VideoParams extends Pagination {
-    //todo add other filter param here
-
     @IsString()
     @IsOptional()
     slug?: string;
 
-    /*@IsEnum(Visibility)
+    @IsEnum(Visibility)
     @IsOptional()
-    visibility?: Visibility;*/
+    visibility?: Visibility;
+
+    @IsOptional()
+    draft?: boolean;
 
     @IsString()
     @IsOptional()
@@ -27,4 +29,7 @@ export class VideoParams extends Pagination {
 
     @IsOptional()
     maxViews?: number;
+
+    @IsOptional()
+    authorId?: string;
 }

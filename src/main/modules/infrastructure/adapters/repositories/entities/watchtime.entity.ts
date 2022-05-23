@@ -33,10 +33,10 @@ export class WatchtimeEntity extends BaseEntity {
     @Column({ type: "boolean", default: false })
     isWatched: boolean;
 
-    @ManyToOne(() => VideoEntity, (video) => video.watchDatas, {
+    @ManyToOne(() => VideoEntity, (video) => video.watchtimes, {
         onDelete: "CASCADE",
         eager: true
     })
-    @JoinColumn({ name: "videoId" })
+    @JoinColumn()
     video: VideoEntity;
 }

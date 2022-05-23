@@ -71,8 +71,12 @@ export class VideoService {
         return newVideo;
     }
 
-    async findAll(params: VideoParams = DefaultVideoParams): Promise<Video[]> {
-        const videos = await this.videoRepository.findAll(params);
+    async findAll(
+        params: VideoParams = DefaultVideoParams,
+        me: string,
+        isAdmin: boolean
+    ): Promise<Video[]> {
+        const videos = await this.videoRepository.findAll(params, me, isAdmin);
         return videos.match({
             Some: (value: Video[]) => value,
             None: () => []

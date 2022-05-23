@@ -8,6 +8,7 @@ import { VideoEntity } from "./entities/video.entity";
 import { DefaultVideoParams, VideoParams } from "../../filters/video.params";
 import { VideoFilter } from "../../filters/video.filter";
 import { NotFoundException } from "@nestjs/common";
+import { has } from "lodash";
 
 export class PsqlVideoRepository extends VideoRepository {
     constructor(
@@ -38,10 +39,16 @@ export class PsqlVideoRepository extends VideoRepository {
     }
 
     async findAll(
-        params: VideoParams = DefaultVideoParams
+        params: VideoParams = DefaultVideoParams,
+        me: string,
+        isAdmin: boolean
     ): Promise<Option<Video[]>> {
         const queryBuilder = this.videoRepo.createQueryBuilder("video");
-        this.videoFilter.buildFilters(queryBuilder, params);
+
+        if (me && !has(params, "isWatched") && !has(params, "isWatching"))
+            this.videoFilter.buildWithUserMeta(queryBuilder, me);
+
+        this.videoFilter.buildFilters(queryBuilder, params, me, isAdmin);
         this.videoFilter.buildPaginationAndSort(queryBuilder, params);
 
         const result = await queryBuilder.getMany();
@@ -103,9 +110,9 @@ export class PsqlVideoRepository extends VideoRepository {
         try {
             const hasAccess: [] = await this.videoRepo.query(
                 `
-                    SELECT v.id as video_id,
-                           v."publisherId" as vid_publisher,
-                           col.id as col_id,
+                    SELECT v.id              as video_id,
+                           v."publisherId"   as vid_publisher,
+                           col.id            as col_id,
                            col."publisherId" as col_publisher
                     FROM video v
                              LEFT JOIN collection_videos_video col_vid ON col_vid."videoId" = v.id

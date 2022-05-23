@@ -32,8 +32,8 @@ export class WatchtimeService {
         if (!video) throw new NotFoundException();
         if (
             !updateWatchTimeDto.isWatched &&
-            video.watchDatas &&
-            video.watchDatas[0].isWatched
+            video.watchtimes &&
+            video.watchtimes[0].isWatched
         ) {
             updateWatchTimeDto.isWatched = true;
         }

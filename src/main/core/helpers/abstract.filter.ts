@@ -7,9 +7,12 @@ export enum SortingTypeEnum {
 
 export abstract class AbstractFilter<ENTITY> {
     protected readonly DEFAULT_PAGINATED_QUERY_PAGESIZE = 10;
+
     abstract buildFilters(
         queryBuilder: SelectQueryBuilder<ENTITY>,
-        params: any
+        params: any,
+        me: string,
+        isAdmin: boolean
     ): void;
 
     protected andWhereInStatement(
@@ -109,7 +112,9 @@ export abstract class AbstractFilter<ENTITY> {
 
     abstract totalCount(
         queryBuilder: SelectQueryBuilder<ENTITY>,
-        params: any
+        params: any,
+        me: string,
+        isAdmin: boolean
     ): void;
 
     private orderBy(

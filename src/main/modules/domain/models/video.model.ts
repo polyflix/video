@@ -3,6 +3,7 @@ import { Option, Result } from "@swan-io/boxed";
 import { logger } from "../../../config/logger.config";
 import { Visibility } from "../../infrastructure/adapters/repositories/entities/content.model";
 import { VideoInvalidError } from "../errors/video-invalid.error";
+import { Watchtime } from "./watchtime.model";
 
 const YOUTUBE_MATCH_REGEX =
     /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/gi;
