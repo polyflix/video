@@ -8,8 +8,8 @@ import { VideoService } from "./video.service";
 import { WatchtimeApiMapper } from "../adapters/mappers/watchtime.api.mapper";
 import { WatchtimeRepository } from "../../domain/ports/repositories/watchtime.repository";
 import { WatchtimeDto } from "../../application/dto/watchtime.dto";
-import { VideoEntity } from "../adapters/repositories/entities/video.entity";
 import { VideoEntityMapper } from "../adapters/mappers/video.entity.mapper";
+import { Video } from "../../domain/models/video.model";
 
 @Injectable()
 export class WatchtimeService {
@@ -26,14 +26,14 @@ export class WatchtimeService {
         user: any,
         updateWatchTimeDto: WatchtimeDto
     ): Promise<void> {
-        const video: VideoEntity = await this.videoService.findOne(
+        const video: Video = await this.videoService.findOne(
             updateWatchTimeDto.videoId
         );
         if (!video) throw new NotFoundException();
         if (
             !updateWatchTimeDto.isWatched &&
-            video.watchtimes &&
-            video.watchtimes[0].isWatched
+            video.watchtime &&
+            video.watchtime.isWatched
         ) {
             updateWatchTimeDto.isWatched = true;
         }
@@ -42,7 +42,7 @@ export class WatchtimeService {
             await this.watchtimeRepository.upsert(
                 user,
                 updateWatchTimeDto,
-                this.videoEntityMapper.entityToApi(video)
+                video
             );
         } catch (e) {
             this.logger.warn(

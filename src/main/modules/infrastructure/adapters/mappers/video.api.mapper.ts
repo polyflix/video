@@ -52,6 +52,7 @@ export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
             views: entity.views,
             sourceType: entity.sourceType,
             source: entity.source,
+            watchtime: entity.watchtime,
             createdAt: entity.createdAt,
             updatedAt: entity.updatedAt
         };

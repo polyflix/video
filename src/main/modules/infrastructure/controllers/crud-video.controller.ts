@@ -51,8 +51,16 @@ export class CrudVideoController {
     }
 
     @Get()
-    async findAll(@Query() query: VideoParams): Promise<VideoResponse[]> {
-        const videos: Video[] = await this.videoService.findAll(query);
+    async findAll(
+        @Query() query: VideoParams,
+        @MeId() me: string,
+        @IsAdmin() isAdmin: boolean
+    ): Promise<VideoResponse[]> {
+        const videos: Video[] = await this.videoService.findAll(
+            query,
+            me,
+            isAdmin
+        );
         return this.videoApiMapper.entitiesToApis(videos);
     }
 

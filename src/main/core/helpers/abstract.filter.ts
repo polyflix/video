@@ -11,8 +11,8 @@ export abstract class AbstractFilter<ENTITY> {
     abstract buildFilters(
         queryBuilder: SelectQueryBuilder<ENTITY>,
         params: any,
-        me: string,
-        isAdmin: boolean
+        me?: string,
+        isAdmin?: boolean
     ): void;
 
     protected andWhereInStatement(
@@ -113,8 +113,8 @@ export abstract class AbstractFilter<ENTITY> {
     abstract totalCount(
         queryBuilder: SelectQueryBuilder<ENTITY>,
         params: any,
-        me: string,
-        isAdmin: boolean
+        me?: string,
+        isAdmin?: boolean
     ): void;
 
     private orderBy(

@@ -40,5 +40,5 @@ export class VideoEntity extends BaseModel {
     @JoinColumn()
     watchtimes?: Promise<WatchtimeEntity[]>;
 
-    watchtime?: Promise<WatchtimeEntity>;
+    watchtime?: WatchtimeEntity;
 }

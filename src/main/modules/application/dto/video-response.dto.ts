@@ -1,6 +1,7 @@
 import { Visibility } from "../../infrastructure/adapters/repositories/entities/content.model";
 import { VideoSource } from "../../domain/models/video.model";
 import { PresignedUrlResponse } from "../../../core/types/presigned-url.type";
+import { Watchtime } from "../../domain/models/watchtime.model";
 
 export type VideoPsuResponse = {
     thumbnailPutPsu?: PresignedUrlResponse;
@@ -26,8 +27,6 @@ export class VideoResponse {
 
     views?: number;
 
-    // userMeta?: UserVideoMeta;
-
     // tags?: Tag[];
 
     // attachments?: Attachment[];
@@ -37,6 +36,8 @@ export class VideoResponse {
     sourceType?: VideoSource;
 
     source: string;
+
+    watchtime: Watchtime;
 
     createdAt?: Date;
 

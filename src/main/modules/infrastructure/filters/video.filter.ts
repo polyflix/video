@@ -15,8 +15,8 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
     buildFilters(
         queryBuilder: SelectQueryBuilder<VideoEntity>,
         params: VideoParams,
-        me: string,
-        isAdmin: boolean
+        me?: string,
+        isAdmin?: boolean
     ): void {
         let isMe = false;
         const exact = true;
@@ -168,8 +168,8 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
     totalCount(
         queryBuilder: SelectQueryBuilder<VideoEntity>,
         params: VideoParams,
-        me: string,
-        isAdmin: boolean
+        me?: string,
+        isAdmin?: boolean
     ): void {
         this.buildFilters(queryBuilder, params, me, isAdmin);
         queryBuilder.select("COUNT(DISTINCT video.slug) AS total");

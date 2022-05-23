@@ -11,7 +11,7 @@ import { VideoEntity } from "./video.entity";
 
 @Entity("watchtime")
 @Index(["userId", "videoId"], { unique: true })
-export class WatchtimeEntity extends BaseEntity {
+export class WatchtimeEntity {
     @PrimaryColumn({
         type: "varchar",
         length: 64

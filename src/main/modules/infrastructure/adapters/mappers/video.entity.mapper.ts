@@ -2,9 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { AbstractMapper } from "../../../../core/helpers/abstract.mapper";
 import { Video, VideoProps } from "../../../domain/models/video.model";
 import { VideoEntity } from "../repositories/entities/video.entity";
+import { WatchtimeEntityMapper } from "./watchtime.entity.mapper";
 
 @Injectable()
 export class VideoEntityMapper extends AbstractMapper<VideoEntity, Video> {
+    constructor(private readonly watchtimeEntityMapper: WatchtimeEntityMapper) {
+        super();
+    }
+
     apiToEntity(apiModel: Video): VideoEntity {
         const entity: VideoEntity = {
             slug: apiModel.slug,
@@ -38,6 +43,13 @@ export class VideoEntityMapper extends AbstractMapper<VideoEntity, Video> {
             createdAt: entity.createdAt,
             updatedAt: entity.updatedAt
         };
+
+        if (entity.watchtimes) {
+            videoProps.watchtime = this.watchtimeEntityMapper.entityToApi(
+                entity.watchtime
+            );
+        }
+
         return Video.create(Object.assign(new VideoProps(), videoProps));
     }
 }
