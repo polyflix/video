@@ -23,7 +23,7 @@ export class WatchtimeService {
     private readonly logger = new Logger(WatchtimeService.name);
 
     async syncUserVideoMeta(
-        user: any,
+        meId: string,
         updateWatchTimeDto: WatchtimeDto
     ): Promise<void> {
         const video: Video = await this.videoService.findOne(
@@ -40,16 +40,16 @@ export class WatchtimeService {
 
         try {
             await this.watchtimeRepository.upsert(
-                user,
+                meId,
                 updateWatchTimeDto,
                 video
             );
         } catch (e) {
             this.logger.warn(
-                `Cannot update watchtime, userId: ${user.id}, error: ${e}`
+                `Cannot update watchtime, userId: ${meId}, error: ${e}`
             );
             throw new UnprocessableEntityException(
-                `Cannot update watchtime, userId: ${user.id}, error: ${e}`
+                `Cannot update watchtime, userId: ${meId}, error: ${e}`
             );
         }
     }

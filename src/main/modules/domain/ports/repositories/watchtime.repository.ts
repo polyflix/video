@@ -6,7 +6,7 @@ export abstract class WatchtimeRepository {
     protected readonly logger = new Logger(this.constructor.name);
 
     abstract upsert(
-        user: any,
+        meId: string,
         updateWatchTimeDto: Watchtime,
         video: Video
     ): Promise<void>;

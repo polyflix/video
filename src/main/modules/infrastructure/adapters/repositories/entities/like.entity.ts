@@ -12,14 +12,12 @@ import { VideoEntity } from "./video.entity";
 @Index(["userId", "videoId"], { unique: true })
 export class LikeEntity extends BaseEntity {
     @PrimaryColumn({
-        type: "varchar",
-        length: 64
+        type: "varchar"
     })
     userId: string;
 
     @PrimaryColumn({
-        type: "varchar",
-        length: 64
+        type: "varchar"
     })
     videoId: string;
 

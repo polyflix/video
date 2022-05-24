@@ -8,8 +8,7 @@ import {
 
 export abstract class BaseModel {
     @PrimaryColumn({
-        type: "varchar",
-        length: 64
+        type: "varchar"
     })
     slug: string;
 

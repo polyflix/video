@@ -7,7 +7,6 @@ import { WatchtimeEntityMapper } from "../mappers/watchtime.entity.mapper";
 import { defineIsWatched } from "../../../domain/strategies/watchtime.strategy";
 import { Video } from "../../../domain/models/video.model";
 import { Watchtime } from "../../../domain/models/watchtime.model";
-import { VideoResponse } from "../../../application/dto/video-response.dto";
 import { VideoEntityMapper } from "../mappers/video.entity.mapper";
 
 export class PsqlWatchtimeRepository extends WatchtimeRepository {
@@ -22,7 +21,7 @@ export class PsqlWatchtimeRepository extends WatchtimeRepository {
     }
 
     async upsert(
-        user: any,
+        meId: string,
         updateWatchTimeDto: Watchtime,
         video: Video
     ): Promise<void> {
@@ -35,20 +34,19 @@ export class PsqlWatchtimeRepository extends WatchtimeRepository {
                 WatchtimeEntity,
                 {
                     where: {
-                        userId: user.id,
-                        videoId: updateWatchTimeDto.videoId
+                        userId: meId,
+                        videoSlug: updateWatchTimeDto.videoId
                     }
                 }
             );
 
-            updateWatchTimeDto.userId = user.id;
-
+            updateWatchTimeDto.userId = meId;
             if (watchtime) {
                 await queryRunner.manager.update(
                     WatchtimeEntity,
                     {
-                        userId: user.id,
-                        videoId: updateWatchTimeDto.videoId
+                        userId: meId,
+                        videoSlug: updateWatchTimeDto.videoId
                     },
                     updateWatchTimeDto
                 );

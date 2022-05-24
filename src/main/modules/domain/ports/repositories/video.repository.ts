@@ -11,8 +11,8 @@ export abstract class VideoRepository {
         me: string,
         isAdmin: boolean
     ): Promise<Option<Video[]>>;
-
-    abstract findOne(slug: string): Promise<Option<Video>>;
+    abstract count(params: VideoParams): Promise<number>;
+    abstract findOne(slug: string, meId?: string): Promise<Option<Video>>;
 
     abstract create(video: Video): Promise<Result<Video, Error>>;
 

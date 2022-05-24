@@ -35,6 +35,7 @@ export class ExternalVideoService {
                 throw new BadRequestException("Invalid youtube URL");
             }
         });
+
         const video: Video = this.videoApiMapper.apiToEntity({
             ...videoCreateDto,
             sourceType: VideoSource.YOUTUBE,

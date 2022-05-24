@@ -58,11 +58,23 @@ export class PsqlVideoRepository extends VideoRepository {
         return Option.Some(this.videoEntityMapper.entitiesToApis(result));
     }
 
-    async findOne(slug: string): Promise<Option<Video>> {
+    async count(params: VideoParams): Promise<number> {
+        const queryBuilder = this.videoRepo.createQueryBuilder("video");
+        this.videoFilter.totalCount(queryBuilder, params);
+
+        const count = await queryBuilder.getCount();
+
+        return count || 0;
+    }
+
+    async findOne(slug: string, userId?: string): Promise<Option<Video>> {
         this.logger.log(`Find one video with slug ${slug}`);
-        const result = await this.videoRepo.findOne({
-            where: { slug }
-        });
+        const queryBuilder = this.videoRepo.createQueryBuilder("video");
+        if (userId) {
+            this.videoFilter.buildWithUserMeta(queryBuilder, userId);
+        }
+        const result = await queryBuilder.getOne();
+
         if (result) {
             return Option.Some(this.videoEntityMapper.entityToApi(result));
         }

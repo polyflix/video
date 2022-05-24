@@ -60,24 +60,24 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
             let userMetaCondition;
 
             if (has(params, "isWatched") && !has(params, "isWatching")) {
-                userMetaCondition = "AND watchDatas.isWatched = true ";
+                userMetaCondition = "AND watchtime.isWatched = true ";
             } else if (has(params, "isWatching") && !has(params, "isWatched")) {
-                userMetaCondition = "AND watchDatas.isWatched = false ";
+                userMetaCondition = "AND watchtime.isWatched = false ";
             }
 
             queryBuilder.innerJoinAndMapOne(
                 "video.watchtime",
-                WatchtimeEntity,
-                "watchDatas",
-                `watchDatas.userId = :userId AND watchDatas.videoId = video.slug ${
+                "video.watchtimes",
+                "watchtime",
+                `watchtime.userId = :userId AND watchtime.videoSlug = video.slug ${
                     userMetaCondition || ""
                 }`,
                 { userId: me }
             );
 
             queryBuilder.addGroupBy("video.slug");
-            queryBuilder.addGroupBy("watchDatas.userId");
-            queryBuilder.addGroupBy("watchDatas.videoId");
+            queryBuilder.addGroupBy("watchtime.userId");
+            queryBuilder.addGroupBy("watchtime.videoSlug");
         }
 
         if (isMe || isAdmin) {
@@ -95,12 +95,6 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
                 false
             );
         }
-
-        VideoFilter.buildVisibilityFilters(
-            queryBuilder,
-            Visibility.PUBLIC,
-            false
-        );
     }
 
     private static buildVisibilityFilters(
@@ -154,14 +148,14 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
 
     buildWithUserMeta(
         queryBuilder: SelectQueryBuilder<VideoEntity>,
-        me: string
+        userId: string
     ): void {
         queryBuilder.leftJoinAndMapOne(
             "video.watchtime",
-            WatchtimeEntity,
-            "watchDatas",
-            "watchDatas.userId = :userId",
-            { userId: me }
+            "video.watchtimes",
+            "watchtime",
+            "watchtime.userId = :userId",
+            { userId: userId }
         );
     }
 

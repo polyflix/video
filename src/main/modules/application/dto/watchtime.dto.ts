@@ -2,6 +2,7 @@ import {
     IsBoolean,
     IsNotEmpty,
     IsNumber,
+    IsOptional,
     IsString,
     Max,
     Min
@@ -23,7 +24,7 @@ export class WatchtimeDto {
     @IsNotEmpty()
     watchedPercent: number;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsBoolean()
-    isWatched: boolean;
+    isWatched?: boolean;
 }

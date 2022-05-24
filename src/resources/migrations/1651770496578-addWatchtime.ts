@@ -16,8 +16,9 @@ export class addWatchtime1651770496578 implements MigrationInterface {
         await queryRunner.query(
             `CREATE UNIQUE INDEX "IDX_31a28a551253867030c3a15a26" ON "watchtime" ("userId", "videoId") `
         );
-        await queryRunner.query(`ALTER TABLE "watchtime"
-            ADD CONSTRAINT "FK_6b158a1ab958d80004650f327bb" FOREIGN KEY ("videoId") REFERENCES "video" ("slug") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(
+            `ALTER TABLE "watchtime" ADD CONSTRAINT "FK_6b158a1ab958d80004650f327bb" FOREIGN KEY ("videoId") REFERENCES "video" ("slug") ON DELETE CASCADE ON UPDATE NO ACTION`
+        );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

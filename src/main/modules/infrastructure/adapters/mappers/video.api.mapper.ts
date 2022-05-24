@@ -1,10 +1,20 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { MINIO_BUCKETS } from "src/main/core/constants/presignedUrl.constant";
 import { AbstractMapper } from "../../../../core/helpers/abstract.mapper";
 import { VideoResponse } from "../../../application/dto/video-response.dto";
-import { Video, VideoProps } from "../../../domain/models/video.model";
+import {
+    Video,
+    VideoProps,
+    VideoSource
+} from "../../../domain/models/video.model";
 
 @Injectable()
 export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
+    constructor(private configService: ConfigService) {
+        super();
+    }
+
     apiToEntity(apiModel: Partial<VideoResponse>): Video {
         const videoProps: Partial<VideoProps> = {
             title: apiModel.title,
@@ -40,11 +50,20 @@ export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
     }
 
     entityToApi(entity: Video): VideoResponse {
+        const generateThumbnail = (): string => {
+            const minio = this.configService.get("minio");
+
+            return entity.sourceType === VideoSource.INTERNAL
+                ? `${minio.ssl ? "https" : "http"}://${minio.host}:${
+                      minio.port
+                  }/${MINIO_BUCKETS.IMAGE}/${entity.thumbnail}`
+                : entity.thumbnail;
+        };
         const video: VideoResponse = {
             slug: entity.slug,
             title: entity.title,
             description: entity.description,
-            thumbnail: entity.thumbnail,
+            thumbnail: generateThumbnail(),
             publisherId: entity.publisherId,
             visibility: entity.visibility,
             draft: entity.draft,

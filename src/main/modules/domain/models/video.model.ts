@@ -8,9 +8,8 @@ import { Watchtime } from "./watchtime.model";
 const YOUTUBE_MATCH_REGEX =
     /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/gi;
 
-const isSourceValid = (source: string): boolean => {
-    if (isYoutubeVideo(source)) return true;
-    else return /^.+[.]mp4$/.test(source);
+const isInternalSourceValid = (source: string): boolean => {
+    return /^.+[.]mp4$/.test(source);
 };
 
 export const isThumbnailValid = (source: string): boolean => {
@@ -91,7 +90,7 @@ export class Video {
         public likes: number,
         public views: number,
         public sourceType: VideoSource,
-        private _source: string,
+        public source: string,
         public watchtime: Watchtime,
         public createdAt?: Date,
         public updatedAt?: Date
@@ -124,25 +123,14 @@ export class Video {
         });
     }
 
-    set source(value) {
-        this._source = value;
-    }
-
-    get source(): string {
-        return this.sourceType === VideoSource.YOUTUBE
-            ? `https://www.youtube.com/watch?v=${this._source}`
-            : this._source;
-    }
-
-    get sourceId(): string {
-        return this._source;
-    }
-
     private validate(): Result<string, string> {
         if (!this.source || !this.thumbnail) {
             return Result.Error("No source or thumbnail specified");
         }
-        if (!isSourceValid(this.source)) {
+        if (
+            this.sourceType === VideoSource.INTERNAL &&
+            !isInternalSourceValid(this.source)
+        ) {
             return Result.Error("This video source is not yet allowed");
         }
         if (!isThumbnailValid(this.thumbnail)) {
@@ -150,13 +138,13 @@ export class Video {
         }
         if (
             this.sourceType === VideoSource.INTERNAL &&
-            !isFile(this.source.split("/").pop())
+            !isFile(this.source.split("/")?.pop())
         ) {
             return Result.Error("Source should be a local file name");
         }
         if (
             this.sourceType === VideoSource.INTERNAL &&
-            !isFile(this.thumbnail.split("/").pop())
+            !isFile(this.thumbnail.split("/")?.pop())
         ) {
             return Result.Error("Source thumbnail should be a local file name");
         }

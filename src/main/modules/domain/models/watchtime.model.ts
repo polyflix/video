@@ -22,5 +22,5 @@ export class Watchtime {
     /**
      * true if video is watched by user
      */
-    isWatched: boolean;
+    isWatched?: boolean;
 }

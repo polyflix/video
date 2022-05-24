@@ -8,7 +8,7 @@ import { InternalVideoService } from "./internal-video.service";
 import { VideoRepository } from "../../domain/ports/repositories/video.repository";
 import { ConfigService } from "@nestjs/config";
 import { google, youtube_v3 } from "googleapis";
-import { Result } from "@swan-io/boxed";
+import { Option, Result } from "@swan-io/boxed";
 import { VideoUpdateDto } from "../../application/dto/video-update.dto";
 import {
     InjectKafkaClient,
@@ -98,8 +98,12 @@ export class VideoService {
         });
     }
 
-    async findOne(slug: string): Promise<Video> {
-        const model = await this.videoRepository.findOne(slug);
+    async count(params: VideoParams): Promise<number> {
+        return this.videoRepository.count(params);
+    }
+
+    async findOne(slug: string, meId?: string): Promise<Video> {
+        const model = await this.videoRepository.findOne(slug, meId);
 
         return model.match({
             Some: (value: Video) => value,
@@ -109,13 +113,23 @@ export class VideoService {
         });
     }
 
-    async update(
-        id: string,
-        videoDTO: VideoUpdateDto
-    ): Promise<Partial<Video>> {
-        const video: Video = this.videoApiMapper.apiToEntity(videoDTO);
+    async update(slug: string, videoDTO: VideoUpdateDto): Promise<Video> {
+        const oldVideoOption: Option<Video> =
+            await this.videoRepository.findOne(slug);
+        const oldVideo: Video = oldVideoOption.match({
+            Some: (value) => value,
+            None: () => {
+                throw new NotFoundException("Video not found");
+            }
+        });
+
+        const video: Video = this.videoApiMapper.apiToEntity({
+            ...oldVideo,
+            ...videoDTO,
+            source: oldVideo.source
+        });
         const result: Result<Video, Error> = await this.videoRepository.update(
-            id,
+            slug,
             video
         );
         const model: Video = result.match({

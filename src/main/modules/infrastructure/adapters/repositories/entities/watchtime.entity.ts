@@ -1,5 +1,4 @@
 import {
-    BaseEntity,
     Column,
     Entity,
     Index,
@@ -10,19 +9,17 @@ import {
 import { VideoEntity } from "./video.entity";
 
 @Entity("watchtime")
-@Index(["userId", "videoId"], { unique: true })
+@Index(["userId", "videoSlug"], { unique: true })
 export class WatchtimeEntity {
     @PrimaryColumn({
-        type: "varchar",
-        length: 64
+        type: "varchar"
     })
     userId: string;
 
     @PrimaryColumn({
-        type: "varchar",
-        length: 64
+        type: "varchar"
     })
-    videoId: string;
+    videoSlug: string;
 
     @Column({ type: "float" })
     watchedSeconds: number;
@@ -34,9 +31,8 @@ export class WatchtimeEntity {
     isWatched: boolean;
 
     @ManyToOne(() => VideoEntity, (video) => video.watchtimes, {
-        onDelete: "CASCADE",
-        eager: true
+        onDelete: "CASCADE"
     })
-    @JoinColumn()
-    video: VideoEntity;
+    @JoinColumn({ name: "videoSlug" })
+    video?: VideoEntity;
 }

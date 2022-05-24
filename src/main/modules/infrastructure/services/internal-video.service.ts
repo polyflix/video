@@ -68,7 +68,7 @@ export class InternalVideoService {
         );
 
         const thumbnailPutPsu: any =
-            await this.tokenService.putVideoPresignedUrl(
+            await this.tokenService.putThumbnailPresignedUrl(
                 video.slug,
                 outputThumbnailFilename
             );

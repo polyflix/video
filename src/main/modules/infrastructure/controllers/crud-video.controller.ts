@@ -1,10 +1,12 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     ImATeapotException,
     Param,
     Post,
+    Put,
     Query,
     UnauthorizedException
 } from "@nestjs/common";
@@ -24,6 +26,8 @@ import { PresignedUrlResponse } from "../../../core/types/presigned-url.type";
 import { MINIO_BUCKETS } from "../../../core/constants/presignedUrl.constant";
 import { PresignedUrl } from "../../domain/models/presigned-url.entity";
 import { PresignedUrlApiMapper } from "../adapters/mappers/psu.api.mapper";
+import { Paginate } from "src/main/core/types/pagination.dto";
+import { VideoUpdateDto } from "../../application/dto/video-update.dto";
 
 @Controller("videos")
 export class CrudVideoController {
@@ -42,12 +46,27 @@ export class CrudVideoController {
         const { thumbnailPutPsu, videoPutPsu, ...video } =
             await this.videoService.create(body, meId);
 
-        return {
-            ...this.videoApiMapper.entityToApi(video as Video),
-            videoPutPsu: this.presignedUrlApiMapper.entityToApi(videoPutPsu),
-            thumbnailPutPsu:
-                this.presignedUrlApiMapper.entityToApi(thumbnailPutPsu)
-        };
+        const response = this.videoApiMapper.entityToApi(video as Video);
+
+        if (thumbnailPutPsu) {
+            (response as VideoPsuResponse).videoPutPsu =
+                this.presignedUrlApiMapper.entityToApi(videoPutPsu);
+        }
+        if (videoPutPsu) {
+            (response as VideoPsuResponse).thumbnailPutPsu =
+                this.presignedUrlApiMapper.entityToApi(thumbnailPutPsu);
+        }
+
+        return response;
+    }
+
+    @Put(":slug")
+    async update(
+        @Body() body: VideoUpdateDto,
+        @Param("slug") slug: string
+    ): Promise<VideoResponse> {
+        const video: Video = await this.videoService.update(slug, body);
+        return this.videoApiMapper.entityToApi(video);
     }
 
     @Get()
@@ -55,18 +74,24 @@ export class CrudVideoController {
         @Query() query: VideoParams,
         @MeId() me: string,
         @IsAdmin() isAdmin: boolean
-    ): Promise<VideoResponse[]> {
+    ): Promise<Paginate<VideoResponse>> {
         const videos: Video[] = await this.videoService.findAll(
             query,
             me,
             isAdmin
         );
-        return this.videoApiMapper.entitiesToApis(videos);
+        return {
+            items: this.videoApiMapper.entitiesToApis(videos),
+            totalCount: await this.videoService.count(query)
+        };
     }
 
     @Get(":slug")
-    async findOne(@Param("slug") slug: string): Promise<VideoResponse> {
-        const video: Video = await this.videoService.findOne(slug);
+    async findOne(
+        @Param("slug") slug: string,
+        @MeId() meId: string
+    ): Promise<VideoResponse> {
+        const video: Video = await this.videoService.findOne(slug, meId);
         return this.videoApiMapper.entityToApi(video);
     }
 
@@ -87,7 +112,7 @@ export class CrudVideoController {
         @IsAdmin() isAdmin: boolean,
         @MeId() userId: string
     ): Promise<PresignedUrlResponse> {
-        const video: Video = await this.videoService.findOne(slug);
+        const video: Video = await this.videoService.findOne(slug, userId);
 
         if (video.sourceType !== VideoSource.INTERNAL)
             throw new ImATeapotException(
@@ -113,5 +138,10 @@ export class CrudVideoController {
             MINIO_BUCKETS.VIDEO,
             video.source
         );
+    }
+
+    @Delete(":id")
+    async remove(@Param("id") id: string): Promise<void> {
+        await this.videoService.delete(id);
     }
 }

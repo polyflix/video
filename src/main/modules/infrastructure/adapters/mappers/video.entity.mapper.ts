@@ -22,7 +22,7 @@ export class VideoEntityMapper extends AbstractMapper<VideoEntity, Video> {
             likes: apiModel.likes,
             views: apiModel.views,
             sourceType: apiModel.sourceType,
-            source: apiModel.sourceId
+            source: apiModel.source
         };
         return Object.assign(new VideoEntity(), entity);
     }
@@ -44,7 +44,7 @@ export class VideoEntityMapper extends AbstractMapper<VideoEntity, Video> {
             updatedAt: entity.updatedAt
         };
 
-        if (entity.watchtimes) {
+        if (entity.watchtime) {
             videoProps.watchtime = this.watchtimeEntityMapper.entityToApi(
                 entity.watchtime
             );

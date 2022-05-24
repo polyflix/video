@@ -37,8 +37,8 @@ export class VideoEntity extends BaseModel {
     source: string;
 
     @OneToMany(() => WatchtimeEntity, (watchtime) => watchtime.video)
-    @JoinColumn()
-    watchtimes?: Promise<WatchtimeEntity[]>;
+    @JoinColumn({ name: "watchtimes" })
+    watchtimes?: WatchtimeEntity[];
 
     watchtime?: WatchtimeEntity;
 }

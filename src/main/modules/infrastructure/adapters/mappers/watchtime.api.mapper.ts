@@ -9,14 +9,22 @@ export class WatchtimeApiMapper extends AbstractMapper<
     WatchtimeDto
 > {
     apiToEntity(apiModel: WatchtimeDto): Watchtime {
-        const entity = new Watchtime();
-        Object.assign(entity, apiModel);
-        return entity;
+        const watchtime: Watchtime = {
+            videoId: apiModel.videoId,
+            watchedPercent: apiModel.watchedPercent,
+            watchedSeconds: apiModel.watchedSeconds,
+            isWatched: apiModel.isWatched
+        };
+        return Object.assign(new Watchtime(), watchtime);
     }
 
     entityToApi(entity: Watchtime): WatchtimeDto {
-        const watchtime = new WatchtimeDto();
-        Object.assign(watchtime, entity);
-        return watchtime;
+        const watchtimeDto: WatchtimeDto = {
+            isWatched: entity.isWatched,
+            videoId: entity.videoId,
+            watchedPercent: entity.watchedPercent,
+            watchedSeconds: entity.watchedSeconds
+        };
+        return Object.assign(new WatchtimeDto(), watchtimeDto);
     }
 }
