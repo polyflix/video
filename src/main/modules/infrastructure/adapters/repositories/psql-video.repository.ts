@@ -73,6 +73,7 @@ export class PsqlVideoRepository extends VideoRepository {
         if (userId) {
             this.videoFilter.buildWithUserMeta(queryBuilder, userId);
         }
+        queryBuilder.andWhere("video.slug = :slug", { slug });
         const result = await queryBuilder.getOne();
 
         if (result) {
