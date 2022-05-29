@@ -31,7 +31,7 @@ export const configureTypeORM = (
         entities: ["dist/**/*.entity.js"],
         logging: configService.get("database.psql.debug") === "true",
         cli: {
-            migrationsDir: "src/main/migrations"
+            migrationsDir: "src/resources/migrations"
         },
         autoLoadEntities: true,
         ...credentialsConfig
