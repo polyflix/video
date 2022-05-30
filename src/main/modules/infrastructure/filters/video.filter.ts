@@ -8,7 +8,6 @@ import {
 } from "../../../core/helpers/abstract.filter";
 import { VideoParams } from "./video.params";
 import { Visibility } from "../adapters/repositories/entities/content.model";
-import { WatchtimeEntity } from "../adapters/repositories/entities/watchtime.entity";
 
 @Injectable()
 export class VideoFilter extends AbstractFilter<VideoEntity> {
