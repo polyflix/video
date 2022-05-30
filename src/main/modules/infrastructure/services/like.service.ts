@@ -30,4 +30,12 @@ export class LikeService {
             await this.likeRepository.like(like);
         }
     }
+
+    async isLiked(userId: string, videoId: string): Promise<boolean> {
+        const like = await this.likeRepository.findOne({ userId, videoId });
+        return like.match({
+            Some: () => true,
+            None: () => false
+        });
+    }
 }

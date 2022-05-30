@@ -39,6 +39,8 @@ export class VideoResponse {
 
     watchtime: Watchtime;
 
+    isLiked?: boolean;
+
     createdAt?: Date;
 
     updatedAt?: Date;

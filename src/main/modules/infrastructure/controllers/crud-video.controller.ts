@@ -28,11 +28,13 @@ import { PresignedUrl } from "../../domain/models/presigned-url.entity";
 import { PresignedUrlApiMapper } from "../adapters/mappers/psu.api.mapper";
 import { Paginate } from "src/main/core/types/pagination.dto";
 import { VideoUpdateDto } from "../../application/dto/video-update.dto";
+import { LikeService } from "../services/like.service";
 
 @Controller("videos")
 export class CrudVideoController {
     constructor(
         private readonly videoService: VideoService,
+        private readonly likeService: LikeService,
         private readonly videoApiMapper: VideoApiMapper,
         private readonly presignedUrlApiMapper: PresignedUrlApiMapper,
         private readonly tokenService: TokenService
@@ -92,7 +94,13 @@ export class CrudVideoController {
         @MeId() meId: string
     ): Promise<VideoResponse> {
         const video: Video = await this.videoService.findOne(slug, meId);
-        return this.videoApiMapper.entityToApi(video);
+        const videoResponse: VideoResponse =
+            this.videoApiMapper.entityToApi(video);
+        videoResponse.isLiked = await this.likeService.isLiked(
+            meId,
+            video.slug
+        );
+        return videoResponse;
     }
 
     /**
