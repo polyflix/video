@@ -28,7 +28,7 @@ export class WatchtimeEntity {
     watchedPercent: number;
 
     @Column({ type: "boolean", default: false })
-    isWatched: boolean;
+    isWatched?: boolean;
 
     @ManyToOne(() => VideoEntity, (video) => video.watchtimes, {
         onDelete: "CASCADE"

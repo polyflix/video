@@ -48,7 +48,7 @@ export class PsqlWatchtimeRepository extends WatchtimeRepository {
                         userId: meId,
                         videoSlug: updateWatchTimeDto.videoId
                     },
-                    updateWatchTimeDto
+                    this.watchtimeEntityMapper.apiToEntity(updateWatchTimeDto)
                 );
                 if (defineIsWatched(updateWatchTimeDto.watchedPercent)) {
                     const viewedVideo: Partial<Video> = {};
