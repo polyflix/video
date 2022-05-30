@@ -45,7 +45,7 @@ export const configureTypeORM = (
         JSON.stringify({
             ...config,
             entities: ["src/**/*.entity.ts"],
-            migrations: ["src/main/migrations/*.ts"]
+            migrations: ["src/resources/migrations/*.ts"]
         })
     );
 
