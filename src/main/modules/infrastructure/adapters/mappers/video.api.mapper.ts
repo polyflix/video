@@ -51,12 +51,14 @@ export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
 
     entityToApi(entity: Video): VideoResponse {
         const generateThumbnail = (): string => {
-            const minio = this.configService.get("minio");
+            const { environment } = this.configService.get("minio");
 
             return entity.sourceType === VideoSource.INTERNAL
-                ? `${minio.ssl ? "https" : "http"}://${minio.host}:${
-                      minio.port
-                  }/${MINIO_BUCKETS.IMAGE}/${entity.thumbnail}`
+                ? `${environment?.external?.ssl ? "https" : "http"}://${
+                      environment?.external?.host
+                  }:${environment?.external?.port}/${MINIO_BUCKETS.IMAGE}/${
+                      entity.thumbnail
+                  }`
                 : entity.thumbnail;
         };
         const video: VideoResponse = {
