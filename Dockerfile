@@ -8,6 +8,7 @@ RUN apt-get update --no-install-recommends && \
 
 WORKDIR /home/node
 ENV NODE_ENV production
+ENV NEST_PROFILE production
 COPY --chown=node:node . .
 
 RUN npm config set \
