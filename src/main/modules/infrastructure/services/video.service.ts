@@ -18,6 +18,7 @@ import {
 import { ClientKafka } from "@nestjs/microservices";
 import * as urlSlug from "url-slug";
 import { VideoPSU } from "../../domain/models/presigned-url.entity";
+import { Span } from "nestjs-otel";
 
 @Injectable()
 export class VideoService {
@@ -86,6 +87,7 @@ export class VideoService {
         return newVideo;
     }
 
+    @Span("VIDEO_SERVICE_FIND_ALL")
     async findAll(
         params: VideoParams = DefaultVideoParams,
         me: string,

@@ -3,7 +3,7 @@ import {
     Controller,
     Delete,
     Get,
-    ImATeapotException,
+    ImATeapotException, Logger,
     Param,
     Post,
     Put,
@@ -29,9 +29,11 @@ import { PresignedUrlApiMapper } from "../adapters/mappers/psu.api.mapper";
 import { Paginate } from "src/main/core/types/pagination.dto";
 import { VideoUpdateDto } from "../../application/dto/video-update.dto";
 import { LikeService } from "../services/like.service";
+import { Span } from "nestjs-otel";
 
 @Controller("videos")
 export class CrudVideoController {
+    readonly logger = new Logger(CrudVideoController.name)
     constructor(
         private readonly videoService: VideoService,
         private readonly likeService: LikeService,
@@ -41,6 +43,7 @@ export class CrudVideoController {
     ) {}
 
     @Post()
+    @Span("VIDEO_CONTROLLER_CREATE")
     async create(
         @Body() body: VideoCreateDto,
         @MeId() meId: string
@@ -63,6 +66,7 @@ export class CrudVideoController {
     }
 
     @Put(":slug")
+    @Span("VIDEO_CONTROLLER_UPDATE_ONE")
     async update(
         @Body() body: VideoUpdateDto,
         @Param("slug") slug: string
@@ -72,6 +76,7 @@ export class CrudVideoController {
     }
 
     @Get()
+    @Span("VIDEO_CONTROLLER_FIND_ALL")
     async findAll(
         @Query() query: VideoParams,
         @MeId() me: string,
@@ -89,6 +94,7 @@ export class CrudVideoController {
     }
 
     @Get(":slug")
+    @Span("VIDEO_CONTROLLER_FIND_ONE")
     async findOne(
         @Param("slug") slug: string,
         @MeId() meId: string
@@ -108,6 +114,7 @@ export class CrudVideoController {
      * @param {string} slug youtube video id
      */
     @Get("metadata/:slug")
+    @Span("VIDEO_CONTROLLER_FIND_METAS")
     async findMetas(
         @Param("slug") slug: string
     ): Promise<youtube_v3.Schema$Video> {
@@ -115,6 +122,7 @@ export class CrudVideoController {
     }
 
     @Get(":slug/token")
+    @Span("VIDEO_CONTROLLER_VIDEO_PSU")
     async videoPSU(
         @Param("slug") slug: string,
         @IsAdmin() isAdmin: boolean,
@@ -149,6 +157,7 @@ export class CrudVideoController {
     }
 
     @Delete(":id")
+    @Span("VIDEO_CONTROLLER_DELETE_ONE")
     async remove(@Param("id") id: string): Promise<void> {
         await this.videoService.delete(id);
     }
