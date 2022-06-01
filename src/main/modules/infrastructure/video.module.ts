@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Global, Module } from "@nestjs/common";
 import { PsqlVideoRepository } from "./adapters/repositories/psql-video.repository";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { VideoEntity } from "./adapters/repositories/entities/video.entity";
@@ -33,22 +33,29 @@ import { WatchtimeEntityMapper } from "./adapters/mappers/watchtime.entity.mappe
 import { PresignedUrlApiMapper } from "./adapters/mappers/psu.api.mapper";
 import { PsqlWatchtimeRepository } from "./adapters/repositories/psql-watchtime.repository";
 import { WatchtimeService } from "./services/watchtime.service";
+import { ControllersModule } from "./controllers/controllers.module";
 
 @Module({
-    controllers: [
-        CrudVideoController,
-        StatsVideoController,
-        MessageVideoController,
-        UserController
+    exports: [
+        VideoService,
+        LikeService,
+        VideoRepository,
+        VideoApiMapper,
+        ExternalVideoService,
+        InternalVideoService,
+        PresignedUrlApiMapper,
+        TokenService,
+        WatchtimeService,
+        UserService
     ],
-    exports: [VideoService, LikeService],
     imports: [
         TypeOrmModule.forFeature([
             VideoEntity,
             LikeEntity,
             UserEntity,
             WatchtimeEntity
-        ])
+        ]),
+        ControllersModule
     ],
     providers: [
         VideoService,
@@ -77,4 +84,5 @@ import { WatchtimeService } from "./services/watchtime.service";
         WatchtimeService
     ]
 })
+@Global()
 export class VideoModule {}

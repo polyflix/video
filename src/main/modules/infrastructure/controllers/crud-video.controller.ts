@@ -31,7 +31,7 @@ import { Span } from "nestjs-otel";
 
 @Controller("videos")
 export class CrudVideoController {
-    readonly logger = new Logger(CrudVideoController.name)
+    readonly logger = new Logger(CrudVideoController.name);
     constructor(
         private readonly videoService: VideoService,
         private readonly likeService: LikeService,
