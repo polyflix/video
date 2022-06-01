@@ -49,7 +49,7 @@ export const configureOTel = (
             new WinstonInstrumentation(),
             new HttpInstrumentation(),
             new ExpressInstrumentation(),
-            new NestInstrumentation(),
+            new NestInstrumentation()
         ],
         textMapPropagator: new CompositePropagator({
             propagators: [

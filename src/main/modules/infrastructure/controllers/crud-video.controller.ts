@@ -15,7 +15,10 @@ import { VideoService } from "../services/video.service";
 import { VideoParams } from "../filters/video.params";
 import { VideoApiMapper } from "../adapters/mappers/video.api.mapper";
 import { Video, VideoSource } from "../../domain/models/video.model";
-import { VideoPsuResponse, VideoResponse } from "../../application/dto/video-response.dto";
+import {
+    VideoPsuResponse,
+    VideoResponse
+} from "../../application/dto/video-response.dto";
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
 import { youtube_v3 } from "googleapis";
 import { TokenService } from "../services/token.service";

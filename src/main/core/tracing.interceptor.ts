@@ -18,7 +18,10 @@ export class TracingInjectionInterceptor implements NestInterceptor {
     ): Observable<unknown> {
         const b3Context = this.extractB3Headers(context);
 
-        if (b3Context.length < TracingInjectionInterceptor.EXPECTED_B3_ARRAY_LENGTH) {
+        if (
+            b3Context.length <
+            TracingInjectionInterceptor.EXPECTED_B3_ARRAY_LENGTH
+        ) {
             return next.handle();
         }
 

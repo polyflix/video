@@ -4,5 +4,4 @@ import { Role } from "@polyflix/x-utils/dist/types/roles.enum";
 
 @Controller()
 @Roles(Role.Admin)
-export class AdminVideoController {
-}
+export class AdminVideoController {}
