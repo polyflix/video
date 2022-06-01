@@ -46,6 +46,8 @@ export enum VideoSource {
 }
 
 export class VideoProps {
+    id: string;
+
     slug: string;
 
     title: string;
@@ -82,6 +84,7 @@ export class Video {
 
     private constructor(
         public slug: string,
+        public id: string,
         public title: string,
         public description: string,
         public thumbnail: string,
@@ -100,6 +103,7 @@ export class Video {
     static create(props: VideoProps): Video {
         const video = new Video(
             props.slug,
+            props.id,
             props.title,
             props.description,
             props.thumbnail,

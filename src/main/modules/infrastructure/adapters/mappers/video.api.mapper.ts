@@ -21,6 +21,7 @@ export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
 
     apiToEntity(apiModel: Partial<VideoResponse>): Video {
         const videoProps: Partial<VideoProps> = {
+            id: apiModel.id,
             title: apiModel.title,
             description: apiModel.description,
             thumbnail: apiModel.thumbnail,
@@ -62,6 +63,7 @@ export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
             return `${baseUri}/${MINIO_BUCKETS.IMAGE}/${entity.thumbnail}`;
         };
         const video: VideoResponse = {
+            id: entity.id,
             slug: entity.slug,
             title: entity.title,
             description: entity.description,

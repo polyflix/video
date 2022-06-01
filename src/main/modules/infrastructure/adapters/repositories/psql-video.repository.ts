@@ -114,7 +114,7 @@ export class PsqlVideoRepository extends VideoRepository {
         this.logger.log(`Delete a video with slug ${slug}`);
         try {
             await this.videoRepo.delete({
-                slug
+                id: slug
             });
             if (video.isSome()) {
                 return Result.Ok(video.get());

@@ -9,17 +9,15 @@ import {
 import { VideoEntity } from "./video.entity";
 
 @Entity("watchtime")
-@Index(["userId", "videoSlug"], { unique: true })
+@Index(["userId", "videoId"], { unique: true })
 export class WatchtimeEntity {
     @PrimaryColumn({
-        type: "varchar"
+        type: "uuid"
     })
     userId: string;
 
-    @PrimaryColumn({
-        type: "varchar"
-    })
-    videoSlug: string;
+    @PrimaryColumn()
+    videoId: string;
 
     @Column({ type: "float" })
     watchedSeconds: number;
@@ -33,6 +31,6 @@ export class WatchtimeEntity {
     @ManyToOne(() => VideoEntity, (video) => video.watchtimes, {
         onDelete: "CASCADE"
     })
-    @JoinColumn({ name: "videoSlug" })
+    @JoinColumn({ name: "videoId" })
     video?: VideoEntity;
 }

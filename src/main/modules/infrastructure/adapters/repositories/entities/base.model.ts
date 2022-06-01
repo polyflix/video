@@ -1,6 +1,8 @@
 import { IsOptional } from "class-validator";
 import {
+    Column,
     CreateDateColumn,
+    Index,
     PrimaryColumn,
     UpdateDateColumn,
     VersionColumn
@@ -8,8 +10,12 @@ import {
 
 export abstract class BaseModel {
     @PrimaryColumn({
-        type: "varchar"
+        type: "uuid"
     })
+    id: string;
+
+    @Column({unique: true})
+    @Index()
     slug: string;
 
     @IsOptional({ always: true })

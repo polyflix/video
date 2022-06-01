@@ -11,7 +11,7 @@ export class WatchtimeEntityMapper extends AbstractMapper<
     apiToEntity(apiModel: Watchtime): WatchtimeEntity {
         const entity: WatchtimeEntity = {
             userId: apiModel.userId,
-            videoSlug: apiModel.videoId,
+            videoId: apiModel.videoId,
             watchedPercent: apiModel.watchedPercent,
             watchedSeconds: apiModel.watchedSeconds
         };
@@ -23,7 +23,7 @@ export class WatchtimeEntityMapper extends AbstractMapper<
 
     entityToApi(entity: WatchtimeEntity): Watchtime {
         const watchtime: Watchtime = {
-            videoId: entity.videoSlug,
+            videoId: entity.videoId,
             watchedPercent: entity.watchedPercent,
             watchedSeconds: entity.watchedSeconds,
             isWatched: entity.isWatched,

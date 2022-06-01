@@ -16,6 +16,7 @@ export class VideoEntityMapper extends AbstractMapper<VideoEntity, Video> {
 
     apiToEntity(apiModel: Video): VideoEntity {
         const entity: VideoEntity = {
+            id: apiModel.id,
             slug: apiModel.slug,
             title: apiModel.title,
             description: apiModel.description,
@@ -33,6 +34,7 @@ export class VideoEntityMapper extends AbstractMapper<VideoEntity, Video> {
 
     entityToApi(entity: VideoEntity): Video {
         const videoProps: VideoProps = {
+            id: entity.id,
             slug: entity.slug,
             title: entity.title,
             description: entity.description,

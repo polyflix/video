@@ -12,16 +12,15 @@ import { VideoEntity } from "./video.entity";
 @Index(["userId", "videoId"], { unique: true })
 export class LikeEntity extends BaseEntity {
     @PrimaryColumn({
-        type: "varchar"
+        type: "uuid"
     })
+    @JoinColumn({ name: "userId" })
     userId: string;
 
-    @PrimaryColumn({
-        type: "varchar"
-    })
+    @PrimaryColumn()
     videoId: string;
 
-    @ManyToOne(() => VideoEntity, (video) => video.slug, {
+    @ManyToOne(() => VideoEntity, (video) => video.id, {
         onDelete: "CASCADE"
     })
     @JoinColumn({ name: "videoId" })
