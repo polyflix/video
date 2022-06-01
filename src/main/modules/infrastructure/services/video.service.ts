@@ -19,11 +19,10 @@ import { ClientKafka } from "@nestjs/microservices";
 import * as urlSlug from "url-slug";
 import { VideoPSU } from "../../domain/models/presigned-url.entity";
 import { Span } from "nestjs-otel";
+import { VideoPublisher } from "../../domain/ports/publishers/video.publisher";
 
 @Injectable()
 export class VideoService {
-    private KAFKA_VIDEO_TOPIC: string;
-    private KAFKA_SUBTITLE_TOPIC: string;
     protected readonly logger = new Logger(VideoService.name);
     private readonly YOUTUBE_KEY =
         this.configService.get<string>("youtube.key");
@@ -34,14 +33,8 @@ export class VideoService {
         private readonly videoApiMapper: VideoApiMapper,
         private readonly externalVideoService: ExternalVideoService,
         private readonly internalVideoService: InternalVideoService,
-        @InjectKafkaClient() private readonly kafkaClient: ClientKafka
-    ) {
-        this.KAFKA_VIDEO_TOPIC =
-            this.configService.get<string>("kafka.topics.video");
-        this.KAFKA_SUBTITLE_TOPIC = this.configService.get<string>(
-            "kafka.topics.subtitle"
-        );
-    }
+        private readonly videoPublisher: VideoPublisher
+    ) {}
 
     async create(
         videoCreateDTO: VideoCreateDto,
@@ -62,28 +55,7 @@ export class VideoService {
             newVideo = await this.internalVideoService.create(videoDTO, meId);
         }
 
-        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
-            this.KAFKA_VIDEO_TOPIC,
-            {
-                key: newVideo.slug,
-                value: {
-                    trigger: TriggerType.CREATE,
-                    payload: newVideo
-                }
-            }
-        );
-
-        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
-            this.KAFKA_SUBTITLE_TOPIC,
-            {
-                key: newVideo.slug,
-                value: {
-                    trigger: TriggerType.CREATE,
-                    payload: newVideo
-                }
-            }
-        );
-
+        this.videoPublisher.publishVideoCreate(newVideo);
         return newVideo;
     }
 
@@ -141,16 +113,7 @@ export class VideoService {
             }
         });
 
-        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
-            this.KAFKA_VIDEO_TOPIC,
-            {
-                key: model.slug,
-                value: {
-                    trigger: TriggerType.UPDATE,
-                    payload: model
-                }
-            }
-        );
+        this.videoPublisher.publishVideoUpdate(model);
         return model;
     }
 
@@ -165,16 +128,7 @@ export class VideoService {
             }
         });
 
-        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
-            this.KAFKA_VIDEO_TOPIC,
-            {
-                key: model.slug,
-                value: {
-                    trigger: TriggerType.DELETE,
-                    payload: model
-                }
-            }
-        );
+        this.videoPublisher.publishVideoDelete(model);
     }
 
     async canAccessVideo(
