@@ -38,6 +38,7 @@ const JsonLogger = WinstonModule.createLogger({
 });
 
 const DevLogger = WinstonModule.createLogger({
+    level: process.env.LOG_LEVEL ?? "info",
     transports: [
         new winston.transports.Console({
             format: winston.format.combine(
