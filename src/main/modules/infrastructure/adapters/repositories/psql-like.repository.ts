@@ -22,14 +22,21 @@ export class PsqlLikeRepository extends LikeRepository {
      * @param like
      */
     async like(like: Like): Promise<Result<Like, Error>> {
+        this.logger.log(
+            `New like from userId ${like.userId} for videoId ${like.videoId}`
+        );
         return this.manageLike(like, true);
     }
 
     async unlike(like: Like): Promise<Result<Like, Error>> {
+        this.logger.log(`userId ${like.userId} unlike videoId ${like.videoId}`);
         return this.manageLike(like, false);
     }
 
     async findOne(like: Like): Promise<Option<Like>> {
+        this.logger.log(
+            `Find one like for videoID ${like.videoId} and userId ${like.userId}`
+        );
         try {
             const result = await this.likeRepo.findOne({
                 where: {

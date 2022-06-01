@@ -2,6 +2,7 @@ import { Visibility } from "../../infrastructure/adapters/repositories/entities/
 import { VideoSource } from "../../domain/models/video.model";
 import { PresignedUrlResponse } from "../../../core/types/presigned-url.type";
 import { Watchtime } from "../../domain/models/watchtime.model";
+import { UserDto } from "./user.dto";
 
 export type VideoPsuResponse = {
     thumbnailPutPsu?: PresignedUrlResponse;
@@ -17,7 +18,7 @@ export class VideoResponse {
 
     thumbnail: string;
 
-    publisherId?: string;
+    publisher: UserDto;
 
     visibility: Visibility;
 

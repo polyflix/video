@@ -1,29 +1,28 @@
 import { Injectable } from "@nestjs/common";
 import { AbstractMapper } from "../../../../core/helpers/abstract.mapper";
 import { UserEntity } from "../repositories/entities/user.entity";
-import { User } from "../../../domain/models/user.model";
+import { User, UserProps } from "../../../domain/models/user.model";
 
 @Injectable()
 export class UserEntityMapper extends AbstractMapper<UserEntity, User> {
     apiToEntity(apiModel: User): UserEntity {
-        const user = new UserEntity();
-        Object.assign(user, {
+        const userEntity: UserEntity = {
             userId: apiModel.id,
             avatar: apiModel.avatar,
-            displayName: apiModel.displayName
-        });
-        return user;
+            firstName: apiModel.firstName,
+            lastName: apiModel.lastName
+        };
+        return Object.assign(new UserEntity(), userEntity);
     }
 
     entityToApi(entity: UserEntity): User {
-        const props: User = {
+        const userProps: UserProps = {
             id: entity.userId,
             avatar: entity.avatar,
-            displayName: entity.displayName
+            firstName: entity.firstName,
+            lastName: entity.lastName
         };
-        return Object.assign(
-            new User(entity.userId, entity.avatar, entity.displayName),
-            props
-        );
+
+        return User.create(Object.assign(new UserProps(), userProps));
     }
 }

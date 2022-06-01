@@ -5,6 +5,7 @@ import {
     NotFoundException
 } from "@nestjs/common";
 import { Result } from "@swan-io/boxed";
+import { UserDto } from "../../application/dto/user.dto";
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
 import {
     getYoutubeVideoId,
@@ -40,7 +41,7 @@ export class ExternalVideoService {
             ...videoCreateDto,
             sourceType: VideoSource.YOUTUBE,
             source,
-            ...(meId && { publisherId: meId })
+            ...(meId && { publisher: { id: meId } as UserDto })
         });
 
         const result: Result<Video, Error> =

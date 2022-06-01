@@ -1,7 +1,8 @@
-import { Column, Entity, JoinColumn, OneToMany } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { VideoSource } from "../../../../domain/models/video.model";
 import { BaseModel } from "./base.model";
 import { Visibility } from "./content.model";
+import { UserEntity } from "./user.entity";
 import { WatchtimeEntity } from "./watchtime.entity";
 
 @Entity("video")
@@ -23,6 +24,12 @@ export class VideoEntity extends BaseModel {
 
     @Column("uuid")
     publisherId?: string;
+
+    @ManyToOne(() => UserEntity, (user) => user.userId, {
+        eager: true
+    })
+    @JoinColumn({ name: "publisherId" })
+    publisher?: UserEntity;
 
     @Column({ enum: Visibility, type: "enum", default: Visibility.PUBLIC })
     visibility?: Visibility;

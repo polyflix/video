@@ -31,10 +31,10 @@ export class UserController {
         const user: UserDto = Object.assign(new UserDto(), payload);
         switch (message.trigger) {
             case TriggerType.UPDATE:
-                await this.userService.updateUser(user);
+                await this.userService.update(user);
                 break;
             case TriggerType.CREATE:
-                await this.userService.createUser(user);
+                await this.userService.create(user);
                 break;
         }
     }

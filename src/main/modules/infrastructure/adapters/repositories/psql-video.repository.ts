@@ -32,7 +32,12 @@ export class PsqlVideoRepository extends VideoRepository {
             this.videoEntityMapper.apiToEntity(video);
         try {
             const result = await this.videoRepo.save(videoEntity);
-            return Result.Ok(this.videoEntityMapper.entityToApi(result));
+            const newVideo = await this.videoRepo.findOne({
+                where: {
+                    slug: result.slug
+                }
+            });
+            return Result.Ok(this.videoEntityMapper.entityToApi(newVideo));
         } catch (e) {
             return Result.Error(e);
         }
@@ -43,7 +48,7 @@ export class PsqlVideoRepository extends VideoRepository {
         me: string,
         isAdmin: boolean
     ): Promise<Option<Video[]>> {
-        const queryBuilder = this.videoRepo.createQueryBuilder("video");
+        const queryBuilder = this.videoQueryBuilder();
 
         if (me && !has(params, "isWatched") && !has(params, "isWatching"))
             this.videoFilter.buildWithUserMeta(queryBuilder, me);
@@ -69,7 +74,7 @@ export class PsqlVideoRepository extends VideoRepository {
 
     async findOne(slug: string, userId?: string): Promise<Option<Video>> {
         this.logger.log(`Find one video with slug ${slug}`);
-        const queryBuilder = this.videoRepo.createQueryBuilder("video");
+        const queryBuilder = this.videoQueryBuilder();
         if (userId) {
             this.videoFilter.buildWithUserMeta(queryBuilder, userId);
         }
@@ -82,13 +87,24 @@ export class PsqlVideoRepository extends VideoRepository {
         return Option.None();
     }
 
+    private videoQueryBuilder(): SelectQueryBuilder<VideoEntity> {
+        return this.videoRepo
+            .createQueryBuilder("video")
+            .leftJoinAndSelect("video.publisher", "publisher");
+    }
+
     async update(slug: string, video: Video): Promise<Result<Video, Error>> {
         this.logger.log(`Update a video with slug ${video.slug}`);
         try {
             const result = await this.videoRepo.save(
                 this.videoEntityMapper.apiToEntity(video)
             );
-            return Result.Ok(this.videoEntityMapper.entityToApi(result));
+            const newVideo = await this.videoRepo.findOne({
+                where: {
+                    slug: result.slug
+                }
+            });
+            return Result.Ok(this.videoEntityMapper.entityToApi(newVideo));
         } catch (e) {
             return Result.Error(e);
         }
@@ -108,12 +124,6 @@ export class PsqlVideoRepository extends VideoRepository {
         } catch (e) {
             return Result.Error(e);
         }
-    }
-
-    async createQueryBuilder(
-        alias: string
-    ): Promise<SelectQueryBuilder<VideoEntity>> {
-        return this.videoRepo.createQueryBuilder(alias);
     }
 
     async canAccessVideo(

@@ -4,6 +4,7 @@ import {
     MINIO_THUMBNAIL_FILE_NAME,
     MINIO_VIDEO_FILE_NAME
 } from "src/main/core/constants/video.constant";
+import { UserDto } from "../../application/dto/user.dto";
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
 import { VideoPSU } from "../../domain/models/presigned-url.entity";
 import {
@@ -49,7 +50,7 @@ export class InternalVideoService {
             sourceType: VideoSource.INTERNAL,
             thumbnail,
             source,
-            ...(meId && { publisherId: meId })
+            ...(meId && { publisher: { id: meId } as UserDto })
         });
 
         const result: Result<Video, Error> =

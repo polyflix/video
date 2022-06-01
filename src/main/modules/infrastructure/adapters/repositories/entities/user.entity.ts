@@ -9,5 +9,8 @@ export class UserEntity {
     avatar: string;
 
     @Column({ type: "text" })
-    displayName: string;
+    firstName: string;
+
+    @Column({ type: "text" })
+    lastName: string;
 }

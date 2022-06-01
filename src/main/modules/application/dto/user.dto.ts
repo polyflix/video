@@ -1,5 +1,6 @@
 export class UserDto {
     id: string;
     avatar: string;
-    displayName: string;
+    firstName: string;
+    lastName: string;
 }

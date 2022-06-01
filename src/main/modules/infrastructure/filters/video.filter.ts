@@ -34,7 +34,7 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
 
         if (has(params, "authorId")) {
             isMe = me === params?.authorId;
-            queryBuilder.andWhere("video.publisherId = :publisherId", {
+            queryBuilder.andWhere("publisher.userId = :publisherId", {
                 publisherId: params.authorId
             });
         }
@@ -77,6 +77,7 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
             queryBuilder.addGroupBy("video.slug");
             queryBuilder.addGroupBy("watchtime.userId");
             queryBuilder.addGroupBy("watchtime.videoSlug");
+            queryBuilder.addGroupBy("publisher.userId");
         }
 
         if (isMe || isAdmin) {

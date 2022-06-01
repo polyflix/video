@@ -1,7 +1,26 @@
+export class UserProps {
+    id: string;
+    avatar: string;
+    firstName: string;
+    lastName: string;
+}
+
 export class User {
-    constructor(
+    private constructor(
         readonly id: string,
         readonly avatar: string,
-        readonly displayName: string
+        readonly firstName: string,
+        readonly lastName: string
     ) {}
+
+    static create(props: UserProps): User {
+        const video = new User(
+            props.id,
+            props.avatar,
+            props.firstName,
+            props.lastName
+        );
+
+        return video;
+    }
 }

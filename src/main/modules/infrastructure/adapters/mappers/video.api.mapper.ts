@@ -27,8 +27,8 @@ export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
         if (apiModel.slug) {
             videoProps.slug = apiModel.slug;
         }
-        if (apiModel.publisherId) {
-            videoProps.publisherId = apiModel.publisherId;
+        if (apiModel.publisher) {
+            videoProps.publisher = apiModel.publisher;
         }
         if (apiModel.likes) {
             videoProps.likes = apiModel.likes;
@@ -66,7 +66,7 @@ export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
             title: entity.title,
             description: entity.description,
             thumbnail: generateThumbnail(),
-            publisherId: entity.publisherId,
+            publisher: entity.publisher,
             visibility: entity.visibility,
             draft: entity.draft,
             likes: entity.likes,

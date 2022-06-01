@@ -3,6 +3,7 @@ import { Option, Result } from "@swan-io/boxed";
 import { logger } from "../../../config/logger.config";
 import { Visibility } from "../../infrastructure/adapters/repositories/entities/content.model";
 import { VideoInvalidError } from "../errors/video-invalid.error";
+import { User } from "./user.model";
 import { Watchtime } from "./watchtime.model";
 
 const YOUTUBE_MATCH_REGEX =
@@ -53,7 +54,7 @@ export class VideoProps {
 
     thumbnail: string;
 
-    publisherId: string;
+    publisher: User;
 
     visibility: Visibility;
 
@@ -84,7 +85,7 @@ export class Video {
         public title: string,
         public description: string,
         public thumbnail: string,
-        public publisherId: string,
+        public publisher: User,
         public visibility: Visibility,
         public draft: boolean,
         public likes: number,
@@ -102,7 +103,7 @@ export class Video {
             props.title,
             props.description,
             props.thumbnail,
-            props.publisherId,
+            props.publisher,
             props.visibility,
             props.draft,
             props.likes,
@@ -155,7 +156,7 @@ export class Video {
         video: Video,
         userId: string
     ): Result<string, string> {
-        const isVideoAuthor = userId === video.publisherId;
+        const isVideoAuthor = userId === video.publisher?.id;
         const canAccessDraftVideo = video.draft && isVideoAuthor;
         const isVideoPublic = video.visibility !== Visibility.PUBLIC;
 

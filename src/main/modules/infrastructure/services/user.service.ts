@@ -10,12 +10,14 @@ export class UserService {
         private readonly userRepository: UserRepository
     ) {}
 
-    async updateUser(user: UserDto): Promise<void> {
-        await this.userRepository.update(user.id, user);
+    async update(user: UserDto): Promise<void> {
+        await this.userRepository.update(
+            user.id,
+            this.userApiMapper.apiToEntity(user)
+        );
     }
 
-    async createUser(user: UserDto): Promise<void> {
-        user.displayName = `${user["firstName"]} ${user["lastName"]}`;
-        await this.userRepository.create(user);
+    async create(user: UserDto): Promise<void> {
+        await this.userRepository.create(this.userApiMapper.apiToEntity(user));
     }
 }
