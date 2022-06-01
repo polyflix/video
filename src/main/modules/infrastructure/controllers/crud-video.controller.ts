@@ -80,13 +80,13 @@ export class CrudVideoController {
     @Span("VIDEO_CONTROLLER_FIND_ALL")
     async findAll(
         @Query() query: VideoParams,
-        @MeId() me: string,
-        @IsAdmin() isAdmin: boolean
+        @MeId() me: string
     ): Promise<Paginate<VideoResponse>> {
+        const isAdminRequest = false;
         const videos: Video[] = await this.videoService.findAll(
             query,
             me,
-            isAdmin
+            isAdminRequest
         );
         return {
             items: this.videoApiMapper.entitiesToApis(videos),
