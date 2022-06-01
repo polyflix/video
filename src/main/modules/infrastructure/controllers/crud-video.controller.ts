@@ -3,7 +3,8 @@ import {
     Controller,
     Delete,
     Get,
-    ImATeapotException, Logger,
+    ImATeapotException,
+    Logger,
     Param,
     Post,
     Put,
@@ -14,14 +15,11 @@ import { VideoService } from "../services/video.service";
 import { VideoParams } from "../filters/video.params";
 import { VideoApiMapper } from "../adapters/mappers/video.api.mapper";
 import { Video, VideoSource } from "../../domain/models/video.model";
-import {
-    VideoPsuResponse,
-    VideoResponse
-} from "../../application/dto/video-response.dto";
+import { VideoPsuResponse, VideoResponse } from "../../application/dto/video-response.dto";
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
 import { youtube_v3 } from "googleapis";
 import { TokenService } from "../services/token.service";
-import { MeId, IsAdmin } from "@polyflix/x-utils";
+import { IsAdmin, MeId } from "@polyflix/x-utils";
 import { PresignedUrlResponse } from "../../../core/types/presigned-url.type";
 import { MINIO_BUCKETS } from "../../../core/constants/presignedUrl.constant";
 import { PresignedUrl } from "../../domain/models/presigned-url.entity";

@@ -5,6 +5,7 @@ import { kafkaConfig } from "@polyflix/x-utils";
 import { ISLOCAL, loadConfiguration } from "./config/loader.config";
 import { logger } from "./config/logger.config";
 import { configureOTel } from "./config/tracing.config";
+import { TracingInjectionInterceptor } from "./core/tracing.interceptor";
 
 async function bootstrap() {
     const config = loadConfiguration(logger);

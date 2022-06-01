@@ -8,6 +8,8 @@ import { configureTypeORM } from "./config/database.config";
 import { VideoModule } from "./modules/infrastructure/video.module";
 import { MinioConfigModule } from "./core/configuration/minio.module";
 import { KafkaModule } from "./core/configuration/kafka.module";
+import { TracingInjectionInterceptor } from "./core/tracing.interceptor";
+import { APP_INTERCEPTOR } from "@nestjs/core";
 
 interface AppModuleOptions {
     config?: Record<string, any>;
@@ -17,7 +19,14 @@ export class AppModule {
     static bootstrap(options?: AppModuleOptions): DynamicModule {
         return {
             module: AppModule,
-            providers: [Logger, AppService],
+            providers: [
+                Logger,
+                AppService,
+                {
+                    provide: APP_INTERCEPTOR,
+                    useClass: TracingInjectionInterceptor
+                }
+            ],
             imports: [
                 MinioConfigModule,
                 KafkaModule,

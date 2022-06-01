@@ -14,6 +14,10 @@ import {
     SemanticResourceAttributes,
     TelemetrySdkLanguageValues
 } from "@opentelemetry/semantic-conventions";
+import { B3Propagator } from "@opentelemetry/propagator-b3";
+import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
+import { ExpressInstrumentation } from "@opentelemetry/instrumentation-express";
+import { NestInstrumentation } from "@opentelemetry/instrumentation-nestjs-core";
 
 const LOGGER_CTX = "TracingLoader";
 
@@ -41,13 +45,19 @@ export const configureOTel = (
         spanProcessor: new BatchSpanProcessor(otelExporter),
         traceExporter: otelExporter,
         contextManager: new AsyncLocalStorageContextManager(),
-        instrumentations: [new WinstonInstrumentation()],
+        instrumentations: [
+            new WinstonInstrumentation(),
+            new HttpInstrumentation(),
+            new ExpressInstrumentation(),
+            new NestInstrumentation(),
+        ],
         textMapPropagator: new CompositePropagator({
             propagators: [
                 // Propagate the contexte of the trace
                 new W3CTraceContextPropagator(),
                 // Propagate data in the header of each requests
-                new W3CBaggagePropagator()
+                new W3CBaggagePropagator(),
+                new B3Propagator()
             ]
         })
     });
