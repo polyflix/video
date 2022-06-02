@@ -6,7 +6,6 @@ import { StatsVideoController } from "./stats-video.controller";
 import { MessageVideoController } from "./messages-video.controller";
 import { UserController } from "./user.controller";
 import { AdminVideoController } from "./admin/video.controller";
-import { VideoService } from "../services/video.service";
 
 @Module({
     controllers: [
@@ -22,6 +21,6 @@ import { VideoService } from "../services/video.service";
             useClass: RolesGuard
         }
     ],
-    imports: [VideoService]
+    imports: []
 })
 export class ControllersModule {}

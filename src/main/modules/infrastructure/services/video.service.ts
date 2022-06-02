@@ -87,7 +87,10 @@ export class VideoService {
         });
     }
 
-    async update(slug: string, videoDTO: VideoUpdateDto): Promise<Video> {
+    async update(
+        slug: string,
+        videoDTO: Partial<VideoUpdateDto>
+    ): Promise<Video> {
         const oldVideoOption: Option<Video> =
             await this.videoRepository.findOne(slug);
         const oldVideo: Video = oldVideoOption.match({
@@ -157,5 +160,14 @@ export class VideoService {
             this.logger.warn(`Failed to properly fetch videoId ${slug}`);
             throw new NotFoundException("video not found");
         }
+    }
+
+    async toggleVideoDraftMode(video_slug: string): Promise<Video> {
+        const found_video = await this.findOne(video_slug);
+        const payload: Partial<VideoUpdateDto> = {
+            draft: !found_video.draft
+        };
+
+        return await this.update(video_slug, payload);
     }
 }
