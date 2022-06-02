@@ -41,7 +41,7 @@
     "@opentelemetry/sdk-node": "^0.27.0",
     "@opentelemetry/sdk-trace-base": "^1.0.1",
     "@opentelemetry/semantic-conventions": "^1.0.1",
-    "@polyflix/x-utils": "^1.6.1",
+    "@polyflix/x-utils": "^1.6.3",
     "@svtslv/nestjs-minio": "^1.0.1",
     "@swan-io/boxed": "^0.8.0",
     "class-transformer": "^0.5.1",
