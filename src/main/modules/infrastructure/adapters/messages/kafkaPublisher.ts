@@ -50,11 +50,11 @@ export class KafkaPublisher extends VideoPublisher {
     }
 
     publishVideoCreate(video: Video) {
-        this.tryPublishMessage(TriggerType.UPDATE, video);
+        this.tryPublishMessage(TriggerType.CREATE, video);
     }
 
     publishVideoDelete(video: Video) {
-        this.tryPublishMessage(TriggerType.UPDATE, video);
+        this.tryPublishMessage(TriggerType.DELETE, video);
     }
 
     publishVideoUpdate(video: Video) {
