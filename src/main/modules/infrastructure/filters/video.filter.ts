@@ -34,7 +34,7 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
 
         if (has(params, "authorId")) {
             isMe = me === params?.authorId;
-            queryBuilder.andWhere("publisher.userId = :publisherId", {
+            queryBuilder.andWhere("video.publisherId = :publisherId", {
                 publisherId: params.authorId
             });
         }
