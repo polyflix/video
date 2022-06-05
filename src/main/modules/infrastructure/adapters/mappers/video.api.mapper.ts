@@ -8,10 +8,14 @@ import {
     VideoProps,
     VideoSource
 } from "../../../domain/models/video.model";
+import { TokenService } from "../../services/token.service";
 
 @Injectable()
 export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
-    constructor(private configService: ConfigService) {
+    constructor(
+        private configService: ConfigService,
+        private tokenService: TokenService
+    ) {
         super();
     }
 
@@ -50,22 +54,18 @@ export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
     }
 
     entityToApi(entity: Video): VideoResponse {
-        const generateThumbnail = (): string => {
-            const { environment } = this.configService.get("minio");
-
-            return entity.sourceType === VideoSource.INTERNAL
-                ? `${environment?.external?.ssl ? "https" : "http"}://${
-                      environment?.external?.host
-                  }:${environment?.external?.port}/${MINIO_BUCKETS.IMAGE}/${
-                      entity.thumbnail
-                  }`
-                : entity.thumbnail;
+        const formatThumbnailUri = (): string => {
+            if (entity.sourceType !== VideoSource.INTERNAL) {
+                return entity.thumbnail;
+            }
+            const baseUri = this.tokenService.getMinioBaseUri("external");
+            return `${baseUri}/${MINIO_BUCKETS.IMAGE}/${entity.thumbnail}`;
         };
         const video: VideoResponse = {
             slug: entity.slug,
             title: entity.title,
             description: entity.description,
-            thumbnail: generateThumbnail(),
+            thumbnail: formatThumbnailUri(),
             publisher: entity.publisher,
             visibility: entity.visibility,
             draft: entity.draft,

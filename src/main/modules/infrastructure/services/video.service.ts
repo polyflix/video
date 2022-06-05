@@ -10,12 +10,6 @@ import { ConfigService } from "@nestjs/config";
 import { google, youtube_v3 } from "googleapis";
 import { Option, Result } from "@swan-io/boxed";
 import { VideoUpdateDto } from "../../application/dto/video-update.dto";
-import {
-    InjectKafkaClient,
-    PolyflixKafkaMessage,
-    TriggerType
-} from "@polyflix/x-utils";
-import { ClientKafka } from "@nestjs/microservices";
 import * as urlSlug from "url-slug";
 import { VideoPSU } from "../../domain/models/presigned-url.entity";
 import { Span } from "nestjs-otel";

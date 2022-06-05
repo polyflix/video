@@ -1,4 +1,5 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectMinioClient, MinioClient } from "@svtslv/nestjs-minio";
 import {
     GET_PRESIGNED_URL_EXPIRY,
@@ -12,7 +13,8 @@ import { PresignedUrl } from "../../domain/models/presigned-url.entity";
 export class TokenService {
     private readonly logger = new Logger(this.constructor.name);
     constructor(
-        @InjectMinioClient() private readonly minioClient: MinioClient
+        @InjectMinioClient() private readonly minioClient: MinioClient,
+        private readonly configService: ConfigService
     ) {}
 
     async getPresignedUrl(
@@ -60,11 +62,24 @@ export class TokenService {
         bucketName: MINIO_BUCKETS,
         path: string
     ): Promise<PresignedUrl> {
-        const psu: string = await this.minioClient
+        let psu: string = await this.minioClient
             .presignedPutObject(bucketName, path, PUT_PRESIGNED_URL_EXPIRY)
             .catch((err) => {
                 return this.minioErrorHandler(err);
             });
+        const externalUri = this.getMinioBaseUri("external");
+        const internalUri = this.getMinioBaseUri("internal");
+
+        psu = psu.replace(internalUri, externalUri);
+
         return PresignedUrl.create({ tokenAccess: psu });
+    }
+
+    public getMinioBaseUri(type: "internal" | "external") {
+        const { host, ssl, port } = this.configService.get(
+            `minio.environment.${type}`
+        );
+        const protocol = ssl ? "https" : "http";
+        return `${protocol}://${host}:${port}`;
     }
 }
