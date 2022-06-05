@@ -14,6 +14,7 @@ import * as urlSlug from "url-slug";
 import { VideoPSU } from "../../domain/models/presigned-url.entity";
 import { Span } from "nestjs-otel";
 import { VideoPublisher } from "../../domain/ports/publishers/video.publisher";
+import { nanoid } from "nanoid";
 
 @Injectable()
 export class VideoService {
@@ -38,7 +39,7 @@ export class VideoService {
 
         const videoDTO: VideoCreateDto & { slug: string } = {
             ...videoCreateDTO,
-            slug: urlSlug.convert(videoCreateDTO.title)
+            slug: `${urlSlug.convert(videoCreateDTO.title)}-${nanoid(5)}`
         };
 
         if (isYoutubeVideo(videoDTO.source)) {

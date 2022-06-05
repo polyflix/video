@@ -27,7 +27,6 @@ export class PsqlVideoRepository extends VideoRepository {
     async create(video: Video): Promise<Result<Video, Error>> {
         // TODO: Check whether slug is taken & generate a unique slug
         this.logger.log(`Create a video with slug ${video.slug}`);
-
         const videoEntity: VideoEntity =
             this.videoEntityMapper.apiToEntity(video);
         try {
