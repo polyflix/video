@@ -84,13 +84,16 @@ export class TokenService {
     }
 
     public getMinioBaseUri(type: "internal" | "external") {
-        const { host, ssl, port } = this.configService.get(
+        const { host, port } = this.configService.get(
             `minio.environment.${type}`
+        );
+        const ssl = this.configService.get<boolean>(
+            `minio.environment.${type}.ssl`
         );
         const protocol = ssl ? "https" : "http";
         const baseUri = `${protocol}://${host}`;
-        if (port) {
-            return `${baseUri}:${port}`;
+        if (+port) {
+            return `${baseUri}:${+port}`;
         }
         return baseUri;
     }
