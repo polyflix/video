@@ -6,7 +6,9 @@ export const configureMinio = (
 ): MinioModuleOptions => {
     const port =
         configService.get<number>("minio.environment.internal.port") ?? 9000;
-    const secure = configService.get<boolean>("minio.environment.internal.ssl");
+    const secure: boolean =
+        configService.get<string>("minio.environment.internal.ssl") === "true";
+
     return {
         config: {
             port: port,
