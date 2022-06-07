@@ -35,7 +35,7 @@ export class PsqlWatchtimeRepository extends WatchtimeRepository {
                 {
                     where: {
                         userId: meId,
-                        videoSlug: updateWatchTimeDto.videoId
+                        videoId: updateWatchTimeDto.videoId
                     }
                 }
             );
@@ -46,7 +46,7 @@ export class PsqlWatchtimeRepository extends WatchtimeRepository {
                     WatchtimeEntity,
                     {
                         userId: meId,
-                        videoSlug: updateWatchTimeDto.videoId
+                        videoId: updateWatchTimeDto.videoId
                     },
                     this.watchtimeEntityMapper.apiToEntity(updateWatchTimeDto)
                 );

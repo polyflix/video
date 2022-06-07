@@ -4,6 +4,7 @@ export class addUuid1654072527596 implements MigrationInterface {
     name = "addUuid1654072527596";
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`create extension if not exists "uuid-ossp"`);
         await queryRunner.query(
             `ALTER TABLE "public"."like" DROP CONSTRAINT "FK_80c9b117ff5a70ddc277b8bdd41"`
         );

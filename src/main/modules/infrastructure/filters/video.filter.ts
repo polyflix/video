@@ -68,15 +68,16 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
                 "video.watchtime",
                 "video.watchtimes",
                 "watchtime",
-                `watchtime.userId = :userId AND watchtime.videoSlug = video.slug ${
+                `watchtime.userId = :userId AND watchtime.videoId = video.id ${
                     userMetaCondition || ""
                 }`,
                 { userId: me }
             );
 
+            queryBuilder.addGroupBy("video.id");
             queryBuilder.addGroupBy("video.slug");
             queryBuilder.addGroupBy("watchtime.userId");
-            queryBuilder.addGroupBy("watchtime.videoSlug");
+            queryBuilder.addGroupBy("watchtime.videoId");
             queryBuilder.addGroupBy("publisher.userId");
         }
 
