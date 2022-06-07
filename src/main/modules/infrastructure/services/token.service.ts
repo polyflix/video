@@ -70,17 +70,10 @@ export class TokenService {
             .catch((err) => {
                 return this.minioErrorHandler(err);
             });
-        const externalUri = this.getMinioBaseUri("external");
-        const internalUri = this.getMinioBaseUri("internal");
-        const externalPsu = psu.replace(internalUri, externalUri);
 
-        this.logger.log(
-            `Internal uri ${internalUri} - External uri ${externalUri}`
-        );
-        this.logger.log(`internal psu ${psu}`);
-        this.logger.log(`external psu ${externalPsu}`);
+        this.logger.log(`psu ${psu}`);
 
-        return PresignedUrl.create({ tokenAccess: externalPsu });
+        return PresignedUrl.create({ tokenAccess: psu });
     }
 
     public getMinioBaseUri(type: "internal" | "external") {
