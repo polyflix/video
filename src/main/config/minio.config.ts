@@ -4,8 +4,8 @@ import { MinioModuleOptions } from "@svtslv/nestjs-minio";
 export const configureMinio = (
     configService: ConfigService
 ): MinioModuleOptions => {
-    const port =
-        configService.get<number>("minio.environment.external.port") ?? 9000;
+    const port: number =
+        +configService.get<number>("minio.environment.external.port") ?? 9000;
     const secure: boolean =
         configService.get<string>("minio.environment.external.ssl") === "true";
 
