@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Logger, Param, Put, Query } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Logger,
+    Param,
+    Put,
+    Query
+} from "@nestjs/common";
 import { MeId, Roles } from "@polyflix/x-utils";
 import { Role } from "@polyflix/x-utils/dist/types/roles.enum";
 import { VideoService } from "../../services/video.service";
@@ -39,9 +48,7 @@ export class AdminVideoController {
 
     @Get(":slug")
     @Span("VIDEO_CONTROLLER_FIND_ONE")
-    async findOne(
-        @Param("slug") slug: string,
-    ): Promise<VideoResponse> {
+    async findOne(@Param("slug") slug: string): Promise<VideoResponse> {
         const video: Video = await this.videoService.findOne(slug);
         return this.videoApiMapper.entityToApi(video);
     }
