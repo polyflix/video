@@ -103,10 +103,7 @@ export class CrudVideoController {
         const video: Video = await this.videoService.findOne(slug, meId);
         const videoResponse: VideoResponse =
             this.videoApiMapper.entityToApi(video);
-        videoResponse.isLiked = await this.likeService.isLiked(
-            meId,
-            video.slug
-        );
+        videoResponse.isLiked = await this.likeService.isLiked(meId, video.id);
         return videoResponse;
     }
 

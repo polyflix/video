@@ -41,7 +41,11 @@ export class PsqlWatchtimeRepository extends WatchtimeRepository {
             );
 
             updateWatchTimeDto.userId = meId;
+            const isWatched = defineIsWatched(
+                updateWatchTimeDto.watchedPercent
+            );
             if (watchtime) {
+                updateWatchTimeDto.isWatched = isWatched;
                 await queryRunner.manager.update(
                     WatchtimeEntity,
                     {
@@ -50,7 +54,7 @@ export class PsqlWatchtimeRepository extends WatchtimeRepository {
                     },
                     this.watchtimeEntityMapper.apiToEntity(updateWatchTimeDto)
                 );
-                if (defineIsWatched(updateWatchTimeDto.watchedPercent)) {
+                if (isWatched) {
                     const viewedVideo: Partial<Video> = {};
                     if (!watchtime.isWatched) {
                         viewedVideo.views = video.views + 1;

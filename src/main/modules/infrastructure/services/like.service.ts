@@ -17,6 +17,7 @@ export class LikeService {
         const video = await this.videoService.findOne(like.videoId);
         if (!video) throw new NotFoundException();
 
+        like.videoId = video.id;
         const model = await this.likeRepository.findOne(like);
         const likedb = model.match({
             Some: (value: Like) => value,

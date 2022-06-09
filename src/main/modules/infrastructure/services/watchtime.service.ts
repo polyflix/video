@@ -30,13 +30,7 @@ export class WatchtimeService {
             updateWatchTimeDto.videoId
         );
         if (!video) throw new NotFoundException();
-        if (
-            !updateWatchTimeDto.isWatched &&
-            video.watchtime &&
-            video.watchtime.isWatched
-        ) {
-            updateWatchTimeDto.isWatched = true;
-        }
+        updateWatchTimeDto.videoId = video.id;
 
         try {
             await this.watchtimeRepository.upsert(

@@ -72,7 +72,7 @@ export class PsqlLikeRepository extends LikeRepository {
             await queryRunner.manager.update(
                 VideoEntity,
                 {
-                    slug: like.videoId
+                    id: like.videoId
                 },
                 { likes: numberOfLikes }
             );
@@ -94,6 +94,10 @@ export class PsqlLikeRepository extends LikeRepository {
             return Result.Ok(result);
         } catch (e) {
             await queryRunner.rollbackTransaction();
+
+            this.logger.error(
+                `Can't manage like for video ${like.videoId} and user ${like.userId}: ${e}`
+            );
             return Result.Error(e);
         } finally {
             await queryRunner.release();
