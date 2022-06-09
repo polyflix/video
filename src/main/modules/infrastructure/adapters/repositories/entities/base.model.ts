@@ -14,7 +14,7 @@ export abstract class BaseModel {
     })
     id: string;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     @Index()
     slug: string;
 

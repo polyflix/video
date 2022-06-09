@@ -11,7 +11,7 @@ export type VideoPsuResponse = {
 
 export class VideoResponse {
     id: string;
-    
+
     slug: string;
 
     title: string;

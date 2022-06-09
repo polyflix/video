@@ -1,6 +1,10 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { DefaultVideoParams, VideoParams } from "../filters/video.params";
-import { isYoutubeVideo, Video } from "../../domain/models/video.model";
+import {
+    formatMinIOFilename,
+    isYoutubeVideo,
+    Video
+} from "../../domain/models/video.model";
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
 import { VideoApiMapper } from "../adapters/mappers/video.api.mapper";
 import { ExternalVideoService } from "./external-video.service";
@@ -15,6 +19,8 @@ import { VideoPSU } from "../../domain/models/presigned-url.entity";
 import { Span } from "nestjs-otel";
 import { VideoPublisher } from "../../domain/ports/publishers/video.publisher";
 import { nanoid } from "nanoid";
+import { MINIO_THUMBNAIL_FILE_NAME } from "../../../core/constants/video.constant";
+import { TokenService } from "./token.service";
 
 @Injectable()
 export class VideoService {
@@ -28,7 +34,8 @@ export class VideoService {
         private readonly videoApiMapper: VideoApiMapper,
         private readonly externalVideoService: ExternalVideoService,
         private readonly internalVideoService: InternalVideoService,
-        private readonly videoPublisher: VideoPublisher
+        private readonly videoPublisher: VideoPublisher,
+        private readonly tokenService: TokenService
     ) {}
 
     async create(
@@ -85,7 +92,9 @@ export class VideoService {
     async update(
         slug: string,
         videoDTO: Partial<VideoUpdateDto>
-    ): Promise<Video> {
+    ): Promise<Video & VideoPSU> {
+        const thumbnailFileExtension = videoDTO.thumbnail.split(".")[1];
+        const outputThumbnailFilename = `${MINIO_THUMBNAIL_FILE_NAME}.${thumbnailFileExtension}`;
         const oldVideoOption: Option<Video> =
             await this.videoRepository.findOne(slug);
         const oldVideo: Video = oldVideoOption.match({
@@ -95,10 +104,16 @@ export class VideoService {
             }
         });
 
+        const thumbnail = formatMinIOFilename(
+            oldVideo.slug,
+            outputThumbnailFilename
+        );
+
         const video: Video = this.videoApiMapper.apiToEntity({
             ...oldVideo,
             ...videoDTO,
-            source: oldVideo.source
+            source: oldVideo.source,
+            thumbnail
         });
         const result: Result<Video, Error> = await this.videoRepository.update(
             slug,
@@ -111,8 +126,13 @@ export class VideoService {
             }
         });
 
+        const thumbnailPutPsu: any =
+            await this.tokenService.putThumbnailPresignedUrl(
+                video.slug,
+                outputThumbnailFilename
+            );
         this.videoPublisher.publishVideoUpdate(model);
-        return model;
+        return { ...model, thumbnailPutPsu } as Video & VideoPSU;
     }
 
     async delete(slug: string): Promise<void> {

@@ -30,11 +30,11 @@ export class InternalVideoService {
         videoCreateDto: VideoCreateDto & { slug: string },
         meId: string
     ): Promise<Video & VideoPSU> {
-        const videoFileExtention = videoCreateDto.source.split(".")[1];
-        const thumbnailFileExtention = videoCreateDto.thumbnail.split(".")[1];
+        const videoFileExtension = videoCreateDto.source.split(".")[1];
+        const thumbnailFileExtension = videoCreateDto.thumbnail.split(".")[1];
 
-        const outputVideoFilename = `${MINIO_VIDEO_FILE_NAME}.${videoFileExtention}`;
-        const outputThumbnailFilename = `${MINIO_THUMBNAIL_FILE_NAME}.${thumbnailFileExtention}`;
+        const outputVideoFilename = `${MINIO_VIDEO_FILE_NAME}.${videoFileExtension}`;
+        const outputThumbnailFilename = `${MINIO_THUMBNAIL_FILE_NAME}.${thumbnailFileExtension}`;
 
         const source = formatMinIOFilename(
             videoCreateDto.slug,

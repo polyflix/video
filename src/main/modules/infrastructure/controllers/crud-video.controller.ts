@@ -54,11 +54,11 @@ export class CrudVideoController {
 
         const response = this.videoApiMapper.entityToApi(video as Video);
 
-        if (thumbnailPutPsu) {
+        if (videoPutPsu) {
             (response as VideoPsuResponse).videoPutPsu =
                 this.presignedUrlApiMapper.entityToApi(videoPutPsu);
         }
-        if (videoPutPsu) {
+        if (thumbnailPutPsu) {
             (response as VideoPsuResponse).thumbnailPutPsu =
                 this.presignedUrlApiMapper.entityToApi(thumbnailPutPsu);
         }
@@ -71,9 +71,19 @@ export class CrudVideoController {
     async update(
         @Body() body: VideoUpdateDto,
         @Param("slug") slug: string
-    ): Promise<VideoResponse> {
-        const video: Video = await this.videoService.update(slug, body);
-        return this.videoApiMapper.entityToApi(video);
+    ): Promise<VideoResponse | (VideoResponse & VideoPsuResponse)> {
+        const { thumbnailPutPsu, ...video } = await this.videoService.update(
+            slug,
+            body
+        );
+
+        const response = this.videoApiMapper.entityToApi(video as Video);
+        if (thumbnailPutPsu) {
+            (response as VideoPsuResponse).thumbnailPutPsu =
+                this.presignedUrlApiMapper.entityToApi(thumbnailPutPsu);
+        }
+
+        return response;
     }
 
     @Get()
