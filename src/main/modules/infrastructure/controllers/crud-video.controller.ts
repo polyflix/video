@@ -133,7 +133,7 @@ export class CrudVideoController {
                 "Cannot get a token from an external video"
             );
 
-        if (!isAdmin && Video.canAccessVideo(video, userId).isError()) {
+        if (!isAdmin && !Video.canAccessVideo(video, userId).isError()) {
             throw new UnauthorizedException(`You cannot access this video`);
         }
         if (PresignedUrl.canGenerateVideoToken(video).isError()) {
