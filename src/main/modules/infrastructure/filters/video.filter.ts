@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { has } from "lodash";
 import { SelectQueryBuilder } from "typeorm";
-import { VideoEntity } from "../adapters/repositories/entities/video.entity";
 import {
     AbstractFilter,
     SortingTypeEnum
 } from "../../../core/helpers/abstract.filter";
-import { VideoParams } from "./video.params";
 import { Visibility } from "../adapters/repositories/entities/content.model";
+import { VideoEntity } from "../adapters/repositories/entities/video.entity";
+import { VideoParams } from "./video.params";
 
 @Injectable()
 export class VideoFilter extends AbstractFilter<VideoEntity> {
@@ -143,7 +143,7 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
             "video",
             queryBuilder,
             has(params, "order") ? params.order : "slug",
-            ["slug", "createdAt", "updatedAt", "views"]
+            ["slug", "createdAt", "updatedAt", "views", "likes"]
         );
     }
 
