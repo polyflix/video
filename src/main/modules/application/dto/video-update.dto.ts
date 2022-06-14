@@ -14,4 +14,6 @@ export type VideoUpdateDto = {
     draft: boolean;
 
     source: string;
+
+    attachments?: string[]; // Optional list of attachments ids
 };

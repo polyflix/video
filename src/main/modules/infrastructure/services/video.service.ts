@@ -57,6 +57,7 @@ export class VideoService {
             newVideo = await this.internalVideoService.create(videoDTO, meId);
         }
 
+        newVideo.attachments = videoCreateDTO.attachments;
         this.videoPublisher.publishVideoCreate(newVideo);
         return newVideo;
     }
@@ -135,6 +136,8 @@ export class VideoService {
                 video.slug,
                 outputThumbnailFilename
             );
+
+        model.attachments = videoDTO.attachments;
         this.videoPublisher.publishVideoUpdate(model);
         return { ...model, thumbnailPutPsu } as Video & VideoPSU;
     }

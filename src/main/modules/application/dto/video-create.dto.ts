@@ -12,4 +12,6 @@ export type VideoCreateDto = {
     draft: boolean;
 
     source: string;
+
+    attachments?: string[]; // Optional list of attachments id
 };

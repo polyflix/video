@@ -74,6 +74,8 @@ export class VideoProps {
 
     watchtimes?: Watchtime[];
 
+    attachments?: string[];
+
     createdAt?: Date;
 
     updatedAt?: Date;
@@ -96,6 +98,7 @@ export class Video {
         public sourceType: VideoSource,
         public source: string,
         public watchtime: Watchtime,
+        public attachments?: string[],
         public createdAt?: Date,
         public updatedAt?: Date
     ) {}
@@ -115,6 +118,7 @@ export class Video {
             props.sourceType,
             props.source,
             props.watchtime,
+            props.attachments,
             props.createdAt,
             props.updatedAt
         );
