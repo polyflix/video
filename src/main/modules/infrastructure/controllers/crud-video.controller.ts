@@ -2,6 +2,7 @@ import {
     Body,
     Controller,
     Delete,
+    ForbiddenException,
     Get,
     ImATeapotException,
     Logger,
@@ -22,7 +23,7 @@ import {
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
 import { youtube_v3 } from "googleapis";
 import { TokenService } from "../services/token.service";
-import { IsAdmin, MeId } from "@polyflix/x-utils";
+import { IsAdmin, MeId, MeRoles, Roles } from "@polyflix/x-utils";
 import { PresignedUrlResponse } from "../../../core/types/presigned-url.type";
 import { MINIO_BUCKETS } from "../../../core/constants/presignedUrl.constant";
 import { PresignedUrl } from "../../domain/models/presigned-url.entity";
@@ -31,6 +32,7 @@ import { Paginate } from "src/main/core/types/pagination.dto";
 import { VideoUpdateDto } from "../../application/dto/video-update.dto";
 import { LikeService } from "../services/like.service";
 import { Span } from "nestjs-otel";
+import { Role } from "@polyflix/x-utils/dist/types/roles.enum";
 
 @Controller("videos")
 export class CrudVideoController {
@@ -47,8 +49,13 @@ export class CrudVideoController {
     @Span("VIDEO_CONTROLLER_CREATE")
     async create(
         @Body() body: VideoCreateDto,
-        @MeId() meId: string
+        @MeId() meId: string,
+        @MeRoles() roles: string[]
     ): Promise<VideoResponse | (VideoResponse & VideoPsuResponse)> {
+        if (!roles.includes(Role.Admin) && !roles.includes(Role.Contributor)) {
+            throw new ForbiddenException(`You cannot create a video`);
+        }
+
         const { thumbnailPutPsu, videoPutPsu, ...video } =
             await this.videoService.create(body, meId);
 
@@ -70,8 +77,18 @@ export class CrudVideoController {
     @Span("VIDEO_CONTROLLER_UPDATE_ONE")
     async update(
         @Body() body: VideoUpdateDto,
-        @Param("slug") slug: string
+        @Param("slug") slug: string,
+        @MeId() publisherId: string,
+        @IsAdmin() isAdmin: boolean
     ): Promise<VideoResponse | (VideoResponse & VideoPsuResponse)> {
+        const videoCheck: Video = await this.videoService.findOne(
+            slug,
+            publisherId
+        );
+        if (!isAdmin && videoCheck.publisher.id !== publisherId) {
+            throw new ForbiddenException(`You cannot update this video`);
+        }
+
         const { thumbnailPutPsu, ...video } = await this.videoService.update(
             slug,
             body
@@ -166,7 +183,15 @@ export class CrudVideoController {
 
     @Delete(":id")
     @Span("VIDEO_CONTROLLER_DELETE_ONE")
-    async remove(@Param("id") id: string): Promise<void> {
+    async remove(
+        @Param("id") id: string,
+        @MeId() publisherId: string,
+        @IsAdmin() isAdmin: boolean
+    ): Promise<void> {
+        const video: Video = await this.videoService.findOne(id, publisherId);
+        if (!isAdmin && video.publisher.id !== publisherId) {
+            throw new ForbiddenException(`You cannot delete this video`);
+        }
         await this.videoService.delete(id);
     }
 }

@@ -93,8 +93,12 @@ export class VideoService {
         slug: string,
         videoDTO: Partial<VideoUpdateDto>
     ): Promise<Video & VideoPSU> {
-        const thumbnailFileExtension = videoDTO.thumbnail.split(".")[1];
-        const outputThumbnailFilename = `${MINIO_THUMBNAIL_FILE_NAME}.${thumbnailFileExtension}`;
+        let outputThumbnailFilename = null;
+        if (videoDTO.thumbnail) {
+            const thumbnailFileExtension = videoDTO.thumbnail.split(".")[1];
+            outputThumbnailFilename = `${MINIO_THUMBNAIL_FILE_NAME}.${thumbnailFileExtension}`;
+        }
+
         const oldVideoOption: Option<Video> =
             await this.videoRepository.findOne(slug);
         const oldVideo: Video = oldVideoOption.match({
@@ -104,10 +108,9 @@ export class VideoService {
             }
         });
 
-        const thumbnail = formatMinIOFilename(
-            oldVideo.slug,
-            outputThumbnailFilename
-        );
+        const thumbnail = outputThumbnailFilename
+            ? formatMinIOFilename(oldVideo.slug, outputThumbnailFilename)
+            : oldVideo.thumbnail;
 
         const video: Video = this.videoApiMapper.apiToEntity({
             ...oldVideo,
@@ -115,6 +118,7 @@ export class VideoService {
             source: oldVideo.source,
             thumbnail
         });
+
         const result: Result<Video, Error> = await this.videoRepository.update(
             slug,
             video
