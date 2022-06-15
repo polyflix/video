@@ -165,12 +165,12 @@ export class Video {
         userId: string
     ): Result<string, string> {
         const isVideoAuthor = userId === video.publisher?.id;
-        const canAccessDraftVideo = video.draft && isVideoAuthor;
-        const isVideoPublic = video.visibility !== Visibility.PUBLIC;
+        const isVideoPublic = video.visibility === Visibility.PUBLIC;
 
-        if (!canAccessDraftVideo || (!isVideoPublic && !isVideoAuthor)) {
+        if (!isVideoPublic && !isVideoAuthor) {
             return Result.Error("You cannot access this resource");
         }
+
         return Result.Ok("User can access to this video");
     }
 }

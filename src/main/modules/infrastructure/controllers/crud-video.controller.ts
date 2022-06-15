@@ -47,6 +47,7 @@ export class CrudVideoController {
 
     @Post()
     @Span("VIDEO_CONTROLLER_CREATE")
+    @Roles(Role.Contributor, Role.Admin)
     async create(
         @Body() body: VideoCreateDto,
         @MeId() meId: string,
@@ -75,6 +76,7 @@ export class CrudVideoController {
 
     @Put(":slug")
     @Span("VIDEO_CONTROLLER_UPDATE_ONE")
+    @Roles(Role.Admin, Role.Contributor)
     async update(
         @Body() body: VideoUpdateDto,
         @Param("slug") slug: string,
@@ -125,12 +127,21 @@ export class CrudVideoController {
     @Span("VIDEO_CONTROLLER_FIND_ONE")
     async findOne(
         @Param("slug") slug: string,
-        @MeId() meId: string
+        @IsAdmin() isAdmin: boolean,
+        @MeId() userId: string
     ): Promise<VideoResponse> {
-        const video: Video = await this.videoService.findOne(slug, meId);
+        const video: Video = await this.videoService.findOne(slug, userId);
+
+        if (!isAdmin && Video.canAccessVideo(video, userId).isError()) {
+            throw new UnauthorizedException(`You cannot access this video`);
+        }
+
         const videoResponse: VideoResponse =
             this.videoApiMapper.entityToApi(video);
-        videoResponse.isLiked = await this.likeService.isLiked(meId, video.id);
+        videoResponse.isLiked = await this.likeService.isLiked(
+            userId,
+            video.id
+        );
         return videoResponse;
     }
 
@@ -160,7 +171,7 @@ export class CrudVideoController {
                 "Cannot get a token from an external video"
             );
 
-        if (!isAdmin && !Video.canAccessVideo(video, userId).isError()) {
+        if (!isAdmin && Video.canAccessVideo(video, userId).isError()) {
             throw new UnauthorizedException(`You cannot access this video`);
         }
         if (PresignedUrl.canGenerateVideoToken(video).isError()) {
@@ -168,12 +179,6 @@ export class CrudVideoController {
                 `You cannot create a token for this video`
             );
         }
-
-        // TODO Alex you need to explain me this fuck
-        // const access = await this.videoService.canAccessVideo(video, userId);
-        // if (access.isError()) {
-        //     throw new UnprocessableEntityException(access.getError().message);
-        // }
 
         return await this.tokenService.getPresignedUrl(
             MINIO_BUCKETS.VIDEO,
