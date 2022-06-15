@@ -142,7 +142,10 @@ export class Video {
         ) {
             return Result.Error("This video source is not yet allowed");
         }
-        if (!isThumbnailValid(this.thumbnail)) {
+        if (
+            this.sourceType === VideoSource.INTERNAL &&
+            !isThumbnailValid(this.thumbnail)
+        ) {
             return Result.Error("This thumbnail format is not yet allowed");
         }
         if (

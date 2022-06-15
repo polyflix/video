@@ -21,6 +21,7 @@ import { VideoPublisher } from "../../domain/ports/publishers/video.publisher";
 import { nanoid } from "nanoid";
 import { MINIO_THUMBNAIL_FILE_NAME } from "../../../core/constants/video.constant";
 import { TokenService } from "./token.service";
+import { VideoResponse } from "../../application/dto/video-response.dto";
 
 @Injectable()
 export class VideoService {
@@ -109,16 +110,20 @@ export class VideoService {
             }
         });
 
-        const thumbnail = outputThumbnailFilename
-            ? formatMinIOFilename(oldVideo.slug, outputThumbnailFilename)
-            : oldVideo.thumbnail;
-
-        const video: Video = this.videoApiMapper.apiToEntity({
+        const updateObject: Partial<VideoResponse> = {
             ...oldVideo,
             ...videoDTO,
             source: oldVideo.source,
-            thumbnail
-        });
+            draft: videoDTO.draft === "true"
+        };
+
+        if (videoDTO.thumbnail) {
+            updateObject.thumbnail = outputThumbnailFilename
+                ? formatMinIOFilename(oldVideo.slug, outputThumbnailFilename)
+                : oldVideo.thumbnail;
+        }
+
+        const video: Video = this.videoApiMapper.apiToEntity(updateObject);
 
         const result: Result<Video, Error> = await this.videoRepository.update(
             slug,
@@ -187,7 +192,7 @@ export class VideoService {
     async toggleVideoDraftMode(video_slug: string): Promise<Video> {
         const found_video = await this.findOne(video_slug);
         const payload: Partial<VideoUpdateDto> = {
-            draft: !found_video.draft
+            draft: (!found_video.draft).toString()
         };
 
         return await this.update(video_slug, payload);

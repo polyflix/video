@@ -95,9 +95,8 @@ export class PsqlVideoRepository extends VideoRepository {
     async update(slug: string, video: Video): Promise<Result<Video, Error>> {
         this.logger.log(`Update a video with slug ${video.slug}`);
         try {
-            const result = await this.videoRepo.save(
-                this.videoEntityMapper.apiToEntity(video)
-            );
+            const entity = this.videoEntityMapper.apiToEntity(video);
+            const result = await this.videoRepo.save(entity);
             const newVideo = await this.videoRepo.findOne({
                 where: {
                     slug: result.slug

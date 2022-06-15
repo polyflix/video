@@ -10,6 +10,7 @@ import {
 import { VideoResponse } from "../../application/dto/video-response.dto";
 import { UserService } from "../services/user.service";
 import { UserDto } from "../../application/dto/user.dto";
+import { VideoUpdateDto } from "../../application/dto/video-update.dto";
 
 @Controller()
 export class MessageVideoController {
@@ -70,7 +71,11 @@ export class MessageVideoController {
                 this.videoService.create(videoResponse, null);
                 break;
             case TriggerType.UPDATE:
-                this.videoService.update(videoResponse.slug, videoResponse);
+                const videoDTO: VideoUpdateDto = {
+                    ...videoResponse,
+                    draft: videoResponse.draft.toString()
+                };
+                this.videoService.update(videoResponse.slug, videoDTO);
                 break;
             case TriggerType.DELETE:
                 this.videoService.delete(videoResponse.slug);

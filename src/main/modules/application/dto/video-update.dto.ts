@@ -11,7 +11,7 @@ export type VideoUpdateDto = {
 
     visibility: Visibility;
 
-    draft: boolean;
+    draft: string;
 
     source: string;
 
