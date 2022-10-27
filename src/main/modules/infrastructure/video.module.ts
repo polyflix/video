@@ -32,6 +32,11 @@ import { WatchtimeService } from "./services/watchtime.service";
 import { ControllersModule } from "./controllers/controllers.module";
 import { VideoPublisher } from "../domain/ports/publishers/video.publisher";
 import { KafkaPublisher } from "./adapters/messages/kafkaPublisher";
+import { ReportService } from "./services/report.service";
+import { ReportEntity } from "./adapters/repositories/entities/report.entity";
+import { ReportRepository } from "../domain/ports/repositories/report.repository";
+import { PsqlReportRepository } from "./adapters/repositories/psql-report.repository";
+import {ReportEntityMapper} from "./adapters/mappers/report.entity.mapper";
 
 @Module({
     exports: [
@@ -45,6 +50,7 @@ import { KafkaPublisher } from "./adapters/messages/kafkaPublisher";
         TokenService,
         WatchtimeService,
         UserService,
+        ReportService,
         VideoPublisher
     ],
     imports: [
@@ -52,7 +58,8 @@ import { KafkaPublisher } from "./adapters/messages/kafkaPublisher";
             VideoEntity,
             LikeEntity,
             UserEntity,
-            WatchtimeEntity
+            WatchtimeEntity,
+            ReportEntity
         ]),
         ControllersModule
     ],
@@ -60,6 +67,7 @@ import { KafkaPublisher } from "./adapters/messages/kafkaPublisher";
         VideoService,
         LikeService,
         UserService,
+        ReportService,
         PsqlVideoRepository,
         PsqlLikeRepository,
         PsqlUserRepository,
@@ -69,6 +77,7 @@ import { KafkaPublisher } from "./adapters/messages/kafkaPublisher";
         { provide: LikeRepository, useClass: PsqlLikeRepository },
         { provide: UserRepository, useClass: PsqlUserRepository },
         { provide: VideoPublisher, useClass: KafkaPublisher },
+        { provide: ReportRepository, useClass: PsqlReportRepository },
         VideoApiMapper,
         VideoEntityMapper,
         WatchtimeApiMapper,
@@ -81,6 +90,7 @@ import { KafkaPublisher } from "./adapters/messages/kafkaPublisher";
         InternalVideoService,
         TokenService,
         PresignedUrlApiMapper,
+        ReportEntityMapper,
         WatchtimeService
     ]
 })

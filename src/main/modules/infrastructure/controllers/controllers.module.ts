@@ -6,6 +6,7 @@ import { StatsVideoController } from "./stats-video.controller";
 import { MessageVideoController } from "./messages-video.controller";
 import { UserController } from "./user.controller";
 import { AdminVideoController } from "./admin/video.controller";
+import { ReportVideoController } from "./report.controller";
 
 @Module({
     controllers: [
@@ -13,7 +14,8 @@ import { AdminVideoController } from "./admin/video.controller";
         StatsVideoController,
         MessageVideoController,
         UserController,
-        AdminVideoController
+        AdminVideoController,
+        ReportVideoController
     ],
     providers: [
         {
