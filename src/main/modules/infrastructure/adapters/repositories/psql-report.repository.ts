@@ -7,12 +7,15 @@ import { Report } from "../../../domain/models/report.model";
 import { ReportEntityMapper } from "../mappers/report.entity.mapper";
 import { VideoEntity } from "./entities/video.entity";
 import { Visibility } from "./entities/content.model";
+import { ReportParams } from "../../filters/report.params";
+import { ReportFilter } from "../../filters/report.filter";
 
 export class PsqlReportRepository extends ReportRepository {
     constructor(
         @InjectRepository(ReportEntity)
         private readonly reportRepo: Repository<ReportEntity>,
         private readonly reportEntityMapper: ReportEntityMapper,
+        private readonly reportFilter: ReportFilter,
         private connection: Connection
     ) {
         super();
@@ -109,14 +112,18 @@ export class PsqlReportRepository extends ReportRepository {
         }
     }
 
-    async findAll(): Promise<Option<Report[]>> {
+    async findAll(params: ReportParams): Promise<Option<Report[]>> {
         const queryBuilder = this.reportRepo.createQueryBuilder("report");
+
         queryBuilder.leftJoinAndMapOne(
             "report.video",
             "report.video",
             "video",
             "video.id = report.videoId"
         );
+
+        this.reportFilter.buildFilters(queryBuilder, params);
+        this.reportFilter.buildPaginationAndSort(queryBuilder, params);
 
         const results = await queryBuilder.getMany();
         if (results.length === 0) {
@@ -126,8 +133,10 @@ export class PsqlReportRepository extends ReportRepository {
         return Option.Some(results.map(this.reportEntityMapper.entityToApi));
     }
 
-    async count(): Promise<number> {
-        const count = await this.reportRepo.count();
+    async count(params: ReportParams): Promise<number> {
+        const queryBuilder = this.reportRepo.createQueryBuilder("report");
+        this.reportFilter.totalCount(queryBuilder, params);
+        const count = await queryBuilder.getCount();
 
         return count || 0;
     }

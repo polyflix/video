@@ -8,6 +8,7 @@ import { VideoService } from "./video.service";
 import { ReportDto } from "../../application/dto/report.dto";
 import { ReportRepository } from "../../domain/ports/repositories/report.repository";
 import { Report, ReportReason } from "../../domain/models/report.model";
+import { DefaultReportParams, ReportParams } from "../filters/report.params";
 
 @Injectable()
 export class ReportService {
@@ -27,7 +28,6 @@ export class ReportService {
         if (!Object.values(ReportReason).includes(report.reason)) {
             this.logger.error(`Invalid report reason: ${report.reason}`);
             throw new UnprocessableEntityException(
-                report,
                 `Invalid report reason: ${report.reason}`
             );
         }
@@ -79,15 +79,17 @@ export class ReportService {
         });
     }
 
-    async findAll(): Promise<Report[]> {
-        const reports = await this.reportRepository.findAll();
+    async findAll(
+        params: ReportParams = DefaultReportParams
+    ): Promise<Report[]> {
+        const reports = await this.reportRepository.findAll(params);
         return reports.match({
             Some: (value) => value,
             None: () => []
         });
     }
 
-    async count(): Promise<number> {
-        return this.reportRepository.count();
+    async count(params: ReportParams = DefaultReportParams): Promise<number> {
+        return this.reportRepository.count(params);
     }
 }

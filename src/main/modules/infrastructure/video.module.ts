@@ -38,6 +38,7 @@ import { ReportRepository } from "../domain/ports/repositories/report.repository
 import { PsqlReportRepository } from "./adapters/repositories/psql-report.repository";
 import { ReportEntityMapper } from "./adapters/mappers/report.entity.mapper";
 import { ReportApiMapper } from "./adapters/mappers/report.api.mapper";
+import { ReportFilter } from "./filters/report.filter";
 
 @Module({
     exports: [
@@ -74,6 +75,7 @@ import { ReportApiMapper } from "./adapters/mappers/report.api.mapper";
         PsqlLikeRepository,
         PsqlUserRepository,
         VideoFilter,
+        ReportFilter,
         { provide: VideoRepository, useClass: PsqlVideoRepository },
         { provide: WatchtimeRepository, useClass: PsqlWatchtimeRepository },
         { provide: LikeRepository, useClass: PsqlLikeRepository },

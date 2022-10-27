@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Query } from "@nestjs/common";
 import { MeId, Roles } from "@polyflix/x-utils";
 import { ReportDto, ReportRequestDto } from "../../application/dto/report.dto";
 import { ReportService } from "../services/report.service";
@@ -6,6 +6,7 @@ import { Span } from "nestjs-otel";
 import { Role } from "@polyflix/x-utils/dist/types/roles.enum";
 import { Paginate } from "../../../core/types/pagination.dto";
 import { ReportApiMapper } from "../adapters/mappers/report.api.mapper";
+import { ReportParams } from "../filters/report.params";
 
 @Controller("videos/")
 export class ReportVideoController {
@@ -21,7 +22,12 @@ export class ReportVideoController {
         @Param("slug") slug: string,
         @Body() reportRequest: ReportRequestDto
     ): Promise<ReportDto> {
-        const reportDto = { ...reportRequest, userId: meId, videoId: slug };
+        const reportDto = {
+            ...reportRequest,
+            userId: meId,
+            videoId: slug,
+            state: 0
+        };
         return await this.reportService.report(reportDto);
     }
 
@@ -39,11 +45,11 @@ export class ReportVideoController {
 
     @Get("report/list")
     @Roles(Role.Admin)
-    async findAll(): Promise<Paginate<ReportDto>> {
-        const result = await this.reportService.findAll();
+    async findAll(@Query() query: ReportParams): Promise<Paginate<ReportDto>> {
+        const result = await this.reportService.findAll(query);
         return {
             items: result.map(this.reportApiMapper.entityToApi),
-            totalCount: await this.reportService.count()
+            totalCount: await this.reportService.count(query)
         };
     }
 }

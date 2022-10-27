@@ -2,7 +2,7 @@ import { Video } from "./video.model";
 
 export enum ReportReason {
     NSFW_CONTENT = "NSFW_CONTENT",
-    VIOLENCE_BULLING = "VIOLENCE_BULLING",
+    VIOLENCE_BULLYING = "VIOLENCE_BULLYING",
     DANGEROUS_ACT = "DANGEROUS_ACT",
     SPAM = "SPAM",
     CHILD_ABUSE = "CHILD_ABUSE",

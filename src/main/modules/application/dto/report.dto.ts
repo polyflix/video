@@ -1,9 +1,12 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { ReportReason } from "../../domain/models/report.model";
 
 export class ReportRequestDto {
+    @IsNotEmpty()
+    @IsEnum(ReportReason)
     reason: ReportReason;
 
+    @IsOptional()
     details: string;
 }
 

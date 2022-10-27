@@ -23,9 +23,15 @@ export class ReportEntity {
     @Column({ enum: ReportReason, type: "enum" })
     reason: ReportReason;
 
-    @Column({ type: "text" })
+    @Column({ type: "text", default: "" })
     details: string;
 
+    /**
+     * State of the report
+     * 0: pending
+     * 1: accepted
+     * -1: rejected
+     */
     @Column({ default: 0 })
     state: number;
 

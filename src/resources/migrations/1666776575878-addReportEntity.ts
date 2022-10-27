@@ -5,7 +5,7 @@ export class addReportEntity1666776575878 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            `CREATE TYPE "public"."report_reason_enum" AS ENUM('NSFW_CONTENT', 'VIOLENCE_BULLING', 'DANGEROUS_ACT', 'SPAM', 'CHILD_ABUSE', 'OTHER')`
+            `CREATE TYPE "public"."report_reason_enum" AS ENUM('NSFW_CONTENT', 'VIOLENCE_BULLYING', 'DANGEROUS_ACT', 'SPAM', 'CHILD_ABUSE', 'OTHER')`
         );
         await queryRunner.query(
             `CREATE TABLE "report" ("userId" uuid NOT NULL, "videoId" uuid NOT NULL, "reason" "public"."report_reason_enum" NOT NULL, "details" text NOT NULL, "state" integer NOT NULL DEFAULT '0', CONSTRAINT "PK_22f31fb84e35d8009b3ef3e2ea5" PRIMARY KEY ("userId", "videoId"))`
