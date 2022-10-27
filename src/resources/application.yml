@@ -1,0 +1,50 @@
+server:
+  port: 5002
+
+telemetry:
+  port: 4317
+  host: localhost
+
+kafka:
+  topics:
+    video: polyflix.video
+    video-legacy: polyflix.legacy.video
+    subtitle: polyflix.subtitle
+    subtitle-legacy: polyflix.legacy.subtitle
+    user: polyflix.user
+  client:
+    clientId: video-backend
+    brokers: localhost:29092
+  consumer:
+    groupId: video-consumer
+    allowAutoTopicCreation: true
+
+database:
+  psql:
+    # In case you want to use an URL instead
+    # url: postgres://sa_video:sa_video_pwd@localhost:5433/video
+    host: localhost
+    port: 5433
+    username: sa_video
+    password: sa_video_pwd
+    database: video
+    debug: true
+
+minio:
+  environment:
+    internal:
+      host: localhost
+      port: 9000
+      ssl: false
+    external:
+      host: localhost
+      port: 9000
+      ssl: false
+      
+  credentials:
+    access: minio
+    secret: minio123
+
+# To create api key, see https://developers.google.com/youtube/v3/getting-started#before-you-start
+youtube:
+  key: SuPeR_ApI_KeY
