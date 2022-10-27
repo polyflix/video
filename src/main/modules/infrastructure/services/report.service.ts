@@ -46,4 +46,38 @@ export class ReportService {
             }
         });
     }
+
+    async update(report: Partial<ReportDto>): Promise<Report> {
+        const model = await this.reportRepository.findOne(
+            report.videoId,
+            report.userId
+        );
+
+        const reportDb = model.match({
+            Some: (value) => value,
+            None: () => null
+        });
+
+        if (!reportDb) {
+            throw new NotFoundException();
+        }
+
+        this.logger.log(
+            `Update report on ${report.videoId} from ${report.userId} to ${report.state}`
+        );
+
+        const result = await this.reportRepository.manageReport({
+            ...reportDb,
+            state: report.state
+        });
+
+        //todo in an other issue, if value of result exists and state is 1, send email to video owner to explain that his video is now private due to a report
+
+        return result.match({
+            Ok: (value) => value,
+            Error: (e) => {
+                throw new NotFoundException(e);
+            }
+        });
+    }
 }

@@ -36,7 +36,7 @@ import { ReportService } from "./services/report.service";
 import { ReportEntity } from "./adapters/repositories/entities/report.entity";
 import { ReportRepository } from "../domain/ports/repositories/report.repository";
 import { PsqlReportRepository } from "./adapters/repositories/psql-report.repository";
-import {ReportEntityMapper} from "./adapters/mappers/report.entity.mapper";
+import { ReportEntityMapper } from "./adapters/mappers/report.entity.mapper";
 
 @Module({
     exports: [
