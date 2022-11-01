@@ -1,13 +1,18 @@
-import { Body, Controller, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
 import { MeId, Roles } from "@polyflix/x-utils";
 import { ReportDto, ReportRequestDto } from "../../application/dto/report.dto";
 import { ReportService } from "../services/report.service";
 import { Span } from "nestjs-otel";
 import { Role } from "@polyflix/x-utils/dist/types/roles.enum";
+import { Paginate } from "../../../core/types/pagination.dto";
+import { ReportApiMapper } from "../adapters/mappers/report.api.mapper";
 
 @Controller("videos/")
 export class ReportVideoController {
-    constructor(private readonly reportService: ReportService) {}
+    constructor(
+        private readonly reportService: ReportService,
+        private readonly reportApiMapper: ReportApiMapper
+    ) {}
 
     @Post(":slug/report")
     @Span("REPORT_CONTROLLER_REPORT")
@@ -30,5 +35,15 @@ export class ReportVideoController {
     ): Promise<ReportDto> {
         const reportDto = { videoId, userId, state: stateUpdate };
         return await this.reportService.update(reportDto);
+    }
+
+    @Get("report/list")
+    @Roles(Role.Admin)
+    async findAll(): Promise<Paginate<ReportDto>> {
+        const result = await this.reportService.findAll();
+        return {
+            items: result.map(this.reportApiMapper.entityToApi),
+            totalCount: await this.reportService.count()
+        };
     }
 }

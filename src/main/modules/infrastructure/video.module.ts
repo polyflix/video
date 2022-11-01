@@ -37,6 +37,7 @@ import { ReportEntity } from "./adapters/repositories/entities/report.entity";
 import { ReportRepository } from "../domain/ports/repositories/report.repository";
 import { PsqlReportRepository } from "./adapters/repositories/psql-report.repository";
 import { ReportEntityMapper } from "./adapters/mappers/report.entity.mapper";
+import { ReportApiMapper } from "./adapters/mappers/report.api.mapper";
 
 @Module({
     exports: [
@@ -47,6 +48,7 @@ import { ReportEntityMapper } from "./adapters/mappers/report.entity.mapper";
         ExternalVideoService,
         InternalVideoService,
         PresignedUrlApiMapper,
+        ReportApiMapper,
         TokenService,
         WatchtimeService,
         UserService,
@@ -91,6 +93,7 @@ import { ReportEntityMapper } from "./adapters/mappers/report.entity.mapper";
         TokenService,
         PresignedUrlApiMapper,
         ReportEntityMapper,
+        ReportApiMapper,
         WatchtimeService
     ]
 })

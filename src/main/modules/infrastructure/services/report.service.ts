@@ -5,7 +5,6 @@ import {
     UnprocessableEntityException
 } from "@nestjs/common";
 import { VideoService } from "./video.service";
-import { LikeApiMapper } from "../adapters/mappers/like.api.mapper";
 import { ReportDto } from "../../application/dto/report.dto";
 import { ReportRepository } from "../../domain/ports/repositories/report.repository";
 import { Report, ReportReason } from "../../domain/models/report.model";
@@ -14,7 +13,6 @@ import { Report, ReportReason } from "../../domain/models/report.model";
 export class ReportService {
     protected readonly logger = new Logger(ReportService.name);
     constructor(
-        private readonly likeApiMapper: LikeApiMapper,
         private readonly reportRepository: ReportRepository,
         private readonly videoService: VideoService
     ) {}
@@ -79,5 +77,17 @@ export class ReportService {
                 throw new NotFoundException(e);
             }
         });
+    }
+
+    async findAll(): Promise<Report[]> {
+        const reports = await this.reportRepository.findAll();
+        return reports.match({
+            Some: (value) => value,
+            None: () => []
+        });
+    }
+
+    async count(): Promise<number> {
+        return this.reportRepository.count();
     }
 }

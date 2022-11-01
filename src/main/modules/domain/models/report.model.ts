@@ -1,3 +1,5 @@
+import { Video } from "./video.model";
+
 export enum ReportReason {
     NSFW_CONTENT = "NSFW_CONTENT",
     VIOLENCE_BULLING = "VIOLENCE_BULLING",
@@ -28,4 +30,6 @@ export class Report {
      * -1: rejected
      */
     state?: number;
+
+    video?: Video;
 }

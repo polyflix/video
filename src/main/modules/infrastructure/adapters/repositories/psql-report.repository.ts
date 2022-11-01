@@ -51,21 +51,31 @@ export class PsqlReportRepository extends ReportRepository {
                 this.reportEntityMapper.apiToEntity(report)
             );
 
-            if (report.state === 1) {
+            // if report approved, video should be private, else it should be public
+            if (report.state !== 0) {
                 this.logger.log(
-                    `Report accepted, video ${video.slug} is now private`
+                    `Report ${
+                        report.state === 1 ? "approved" : "rejected"
+                    }, video ${video.slug} is now ${
+                        report.state === 1 ? "private" : "public"
+                    }`
                 );
                 await queryRunner.manager.update(
                     VideoEntity,
                     {
                         id: report.videoId
                     },
-                    { visibility: Visibility.PRIVATE }
+                    {
+                        visibility:
+                            report.state === 1
+                                ? Visibility.PRIVATE
+                                : Visibility.PUBLIC
+                    }
                 );
             }
 
             await queryRunner.commitTransaction();
-            return Result.Ok(result);
+            return Result.Ok(this.reportEntityMapper.entityToApi(result));
         } catch (e) {
             await queryRunner.rollbackTransaction();
 
@@ -97,5 +107,28 @@ export class PsqlReportRepository extends ReportRepository {
         } catch (e) {
             return Option.None();
         }
+    }
+
+    async findAll(): Promise<Option<Report[]>> {
+        const queryBuilder = this.reportRepo.createQueryBuilder("report");
+        queryBuilder.leftJoinAndMapOne(
+            "report.video",
+            "report.video",
+            "video",
+            "video.id = report.videoId"
+        );
+
+        const results = await queryBuilder.getMany();
+        if (results.length === 0) {
+            return Option.None();
+        }
+
+        return Option.Some(results.map(this.reportEntityMapper.entityToApi));
+    }
+
+    async count(): Promise<number> {
+        const count = await this.reportRepo.count();
+
+        return count || 0;
     }
 }

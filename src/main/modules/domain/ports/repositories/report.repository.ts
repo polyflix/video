@@ -10,4 +10,8 @@ export abstract class ReportRepository {
     abstract manageReport(report: Report): Promise<Result<Report, Error>>;
 
     abstract findOne(videoId: string, userId: string): Promise<Option<Report>>;
+
+    abstract findAll(): Promise<Option<Report[]>>;
+
+    abstract count(): Promise<number>;
 }
