@@ -1,0 +1,26 @@
+name: Deploy
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # deployment:
+  #   runs-on: "ubuntu-latest"
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  # - name: "Deploy"
+  #   uses: "deliverybot/helm@master"
+  #   with:
+  #     release: "nginx"
+  #     namespace: "default"
+  #     chart: "app"
+  #     token: "${{ github.token }}"
+  #   env:
+  #     KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
+
+  teleport:
+    uses: polyflix/.github/.github/workflows/teleport.yml@deploy-kube
+    secrets: inherit
