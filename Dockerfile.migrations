@@ -1,4 +1,4 @@
-FROM ghcr.io/polyflix/video:main
+FROM ghcr.io/polyflix/dependencies/psql-migration:main
 
 COPY ./dist/resources/migrations migrations
 RUN tsc --skipLibCheck true --skipDefaultLibCheck true  ./migrations/*.ts  --outDir "./migrations" || echo "expected error"
