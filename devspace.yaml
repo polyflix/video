@@ -1,0 +1,25 @@
+version: v2beta1
+name: video
+
+pipelines:
+  dev:
+    run: |-
+      ensure_pull_secrets --all
+      start_dev app
+
+dev:
+  app:
+    imageSelector: ghcr.io/polyflix/video:main
+    devImage: ghcr.io/loft-sh/devspace-containers/typescript:18-alpine
+    sync:
+      - path: ./
+        excludePaths:
+          - .git/
+        uploadExcludePaths:
+          - Dockerfile
+          - node_modules
+          - dist
+    terminal:
+      command: ./devcontainer.sh
+    ports:
+      - port: "5002:8080"
