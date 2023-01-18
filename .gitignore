@@ -36,3 +36,7 @@ lerna-debug.log*
 
 # Service related
 ormconfig.json
+
+
+# Ignore DevSpace cache and log folder
+.devspace/
