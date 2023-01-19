@@ -11,8 +11,6 @@ export type VideoUpdateDto = {
 
     visibility: Visibility;
 
-    draft: string;
-
     source: string;
 
     attachments?: string[]; // Optional list of attachments ids

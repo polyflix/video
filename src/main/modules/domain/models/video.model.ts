@@ -60,8 +60,6 @@ export class VideoProps {
 
     visibility: Visibility;
 
-    draft: boolean;
-
     likes?: number;
 
     views?: number;
@@ -92,7 +90,6 @@ export class Video {
         public thumbnail: string,
         public publisher: User,
         public visibility: Visibility,
-        public draft: boolean,
         public likes: number,
         public views: number,
         public sourceType: VideoSource,
@@ -112,7 +109,6 @@ export class Video {
             props.thumbnail,
             props.publisher,
             props.visibility,
-            props.draft,
             props.likes,
             props.views,
             props.sourceType,

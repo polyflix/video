@@ -9,8 +9,6 @@ export type VideoCreateDto = {
 
     visibility: Visibility;
 
-    draft: boolean;
-
     source: string;
 
     attachments?: string[]; // Optional list of attachments id

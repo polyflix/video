@@ -82,35 +82,24 @@ export class VideoFilter extends AbstractFilter<VideoEntity> {
         }
 
         if (isMe || isAdmin) {
-            if (has(params, "visibility") || has(params, "draft")) {
+            if (has(params, "visibility")) {
                 VideoFilter.buildVisibilityFilters(
                     queryBuilder,
-                    params.visibility,
-                    params.draft
+                    params.visibility
                 );
             }
         } else {
-            VideoFilter.buildVisibilityFilters(
-                queryBuilder,
-                Visibility.PUBLIC,
-                false
-            );
+            VideoFilter.buildVisibilityFilters(queryBuilder, Visibility.PUBLIC);
         }
     }
 
     private static buildVisibilityFilters(
         queryBuilder: SelectQueryBuilder<VideoEntity>,
-        visibility?: Visibility,
-        draft?: boolean
+        visibility?: Visibility
     ) {
         if (visibility != null) {
             queryBuilder.andWhere("video.visibility = :visibility", {
                 visibility
-            });
-        }
-        if (draft != null) {
-            queryBuilder.andWhere("video.draft = :draft", {
-                draft
             });
         }
     }
