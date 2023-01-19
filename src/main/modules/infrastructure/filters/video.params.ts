@@ -1,13 +1,7 @@
-import { Pagination } from "../../../core/types/pagination.type";
-import {
-    IsBoolean,
-    IsEnum,
-    IsInt,
-    IsOptional,
-    IsString
-} from "class-validator";
-import { Visibility } from "../adapters/repositories/entities/content.model";
 import { Type } from "class-transformer";
+import { IsEnum, IsInt, IsOptional, IsString } from "class-validator";
+import { Pagination } from "../../../core/types/pagination.type";
+import { Visibility } from "../adapters/repositories/entities/content.model";
 
 export const DefaultVideoParams: VideoParams = {
     page: 1,
@@ -23,11 +17,6 @@ export class VideoParams extends Pagination {
     @IsEnum(Visibility)
     @IsOptional()
     visibility?: Visibility;
-
-    @IsBoolean()
-    @IsOptional()
-    @Type(() => Boolean)
-    draft?: boolean;
 
     @IsString()
     @IsOptional()

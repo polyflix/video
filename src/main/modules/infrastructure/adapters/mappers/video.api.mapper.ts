@@ -26,7 +26,6 @@ export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
             description: apiModel.description,
             thumbnail: apiModel.thumbnail,
             visibility: apiModel.visibility,
-            draft: apiModel.draft,
             source: apiModel.source
         };
         if (apiModel.slug) {
@@ -70,7 +69,6 @@ export class VideoApiMapper extends AbstractMapper<Video, VideoResponse> {
             thumbnail: formatThumbnailUri(),
             publisher: entity.publisher,
             visibility: entity.visibility,
-            draft: entity.draft,
             likes: entity.likes,
             views: entity.views,
             sourceType: entity.sourceType,

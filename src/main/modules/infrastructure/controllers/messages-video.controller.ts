@@ -1,16 +1,15 @@
-import { ClientKafka, EventPattern, Payload } from "@nestjs/microservices";
 import { Controller, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { VideoService } from "../services/video.service";
+import { ClientKafka, EventPattern, Payload } from "@nestjs/microservices";
 import {
     InjectKafkaClient,
-    TriggerType,
-    PolyflixKafkaValue
+    PolyflixKafkaValue,
+    TriggerType
 } from "@polyflix/x-utils";
+import { UserDto } from "../../application/dto/user.dto";
 import { VideoResponse } from "../../application/dto/video-response.dto";
 import { UserService } from "../services/user.service";
-import { UserDto } from "../../application/dto/user.dto";
-import { VideoUpdateDto } from "../../application/dto/video-update.dto";
+import { VideoService } from "../services/video.service";
 
 @Controller()
 export class MessageVideoController {
@@ -71,11 +70,7 @@ export class MessageVideoController {
                 this.videoService.create(videoResponse, null);
                 break;
             case TriggerType.UPDATE:
-                const videoDTO: VideoUpdateDto = {
-                    ...videoResponse,
-                    draft: videoResponse.draft.toString()
-                };
-                this.videoService.update(videoResponse.slug, videoDTO);
+                this.videoService.update(videoResponse.slug, videoResponse);
                 break;
             case TriggerType.DELETE:
                 this.videoService.delete(videoResponse.slug);

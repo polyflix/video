@@ -1,6 +1,6 @@
-import { BaseModel } from "./base.model";
-import { IsBoolean, IsOptional, Matches } from "class-validator";
+import { IsOptional, Matches } from "class-validator";
 import { Column } from "typeorm";
+import { BaseModel } from "./base.model";
 
 export enum Visibility {
     PUBLIC = "public",
@@ -18,9 +18,4 @@ export class ContentModel extends BaseModel {
     @IsOptional({ always: true })
     @Column({ enum: Visibility, type: "enum", default: Visibility.PUBLIC })
     visibility?: Visibility;
-
-    @IsBoolean()
-    @IsOptional({ always: true })
-    @Column({ default: false })
-    draft?: boolean;
 }

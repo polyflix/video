@@ -34,9 +34,6 @@ export class VideoEntity extends BaseModel {
     @Column({ enum: Visibility, type: "enum", default: Visibility.PUBLIC })
     visibility?: Visibility;
 
-    @Column({ default: false })
-    draft?: boolean;
-
     @Column({ enum: VideoSource, type: "enum" })
     sourceType: VideoSource;
 

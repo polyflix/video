@@ -10,14 +10,14 @@ import {
 } from "@nestjs/common";
 import { MeId, Roles } from "@polyflix/x-utils";
 import { Role } from "@polyflix/x-utils/dist/types/roles.enum";
-import { VideoService } from "../../services/video.service";
-import { VideoApiMapper } from "../../adapters/mappers/video.api.mapper";
 import { Span } from "nestjs-otel";
-import { VideoParams } from "../../filters/video.params";
 import { Paginate } from "../../../../core/types/pagination.dto";
 import { VideoResponse } from "../../../application/dto/video-response.dto";
-import { Video } from "../../../domain/models/video.model";
 import { VideoUpdateDto } from "../../../application/dto/video-update.dto";
+import { Video } from "../../../domain/models/video.model";
+import { VideoApiMapper } from "../../adapters/mappers/video.api.mapper";
+import { VideoParams } from "../../filters/video.params";
+import { VideoService } from "../../services/video.service";
 
 @Controller("admin/videos")
 @Roles(Role.Admin)
@@ -66,17 +66,6 @@ export class AdminVideoController {
         @Param("slug") slug: string
     ): Promise<VideoResponse> {
         const updated_video = await this.videoService.update(slug, updateDto);
-        return this.videoApiMapper.entityToApi(updated_video);
-    }
-
-    @Put(":slug/draft")
-    @Span("VIDEO_ADMIN_CONTROLLER_TOGGLE_DRAFT_MODE")
-    async toggleVideoDraftMode(
-        @Param("slug") slug: string
-    ): Promise<VideoResponse> {
-        const updated_video = await this.videoService.toggleVideoDraftMode(
-            slug
-        );
         return this.videoApiMapper.entityToApi(updated_video);
     }
 

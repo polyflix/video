@@ -1,27 +1,27 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
-import { DefaultVideoParams, VideoParams } from "../filters/video.params";
+import { ConfigService } from "@nestjs/config";
+import { Option, Result } from "@swan-io/boxed";
+import { google, youtube_v3 } from "googleapis";
+import { nanoid } from "nanoid";
+import { Span } from "nestjs-otel";
+import * as urlSlug from "url-slug";
+import { MINIO_THUMBNAIL_FILE_NAME } from "../../../core/constants/video.constant";
+import { VideoCreateDto } from "../../application/dto/video-create.dto";
+import { VideoResponse } from "../../application/dto/video-response.dto";
+import { VideoUpdateDto } from "../../application/dto/video-update.dto";
+import { VideoPSU } from "../../domain/models/presigned-url.entity";
 import {
     formatMinIOFilename,
     isYoutubeVideo,
     Video
 } from "../../domain/models/video.model";
-import { VideoCreateDto } from "../../application/dto/video-create.dto";
+import { VideoPublisher } from "../../domain/ports/publishers/video.publisher";
+import { VideoRepository } from "../../domain/ports/repositories/video.repository";
 import { VideoApiMapper } from "../adapters/mappers/video.api.mapper";
+import { DefaultVideoParams, VideoParams } from "../filters/video.params";
 import { ExternalVideoService } from "./external-video.service";
 import { InternalVideoService } from "./internal-video.service";
-import { VideoRepository } from "../../domain/ports/repositories/video.repository";
-import { ConfigService } from "@nestjs/config";
-import { google, youtube_v3 } from "googleapis";
-import { Option, Result } from "@swan-io/boxed";
-import { VideoUpdateDto } from "../../application/dto/video-update.dto";
-import * as urlSlug from "url-slug";
-import { VideoPSU } from "../../domain/models/presigned-url.entity";
-import { Span } from "nestjs-otel";
-import { VideoPublisher } from "../../domain/ports/publishers/video.publisher";
-import { nanoid } from "nanoid";
-import { MINIO_THUMBNAIL_FILE_NAME } from "../../../core/constants/video.constant";
 import { TokenService } from "./token.service";
-import { VideoResponse } from "../../application/dto/video-response.dto";
 
 @Injectable()
 export class VideoService {
@@ -113,8 +113,7 @@ export class VideoService {
         const updateObject: Partial<VideoResponse> = {
             ...oldVideo,
             ...videoDTO,
-            source: oldVideo.source,
-            draft: videoDTO.draft === "true"
+            source: oldVideo.source
         };
 
         if (videoDTO.thumbnail) {
@@ -187,14 +186,5 @@ export class VideoService {
             this.logger.warn(`Failed to properly fetch videoId ${slug}`);
             throw new NotFoundException("video not found");
         }
-    }
-
-    async toggleVideoDraftMode(video_slug: string): Promise<Video> {
-        const found_video = await this.findOne(video_slug);
-        const payload: Partial<VideoUpdateDto> = {
-            draft: (!found_video.draft).toString()
-        };
-
-        return await this.update(video_slug, payload);
     }
 }

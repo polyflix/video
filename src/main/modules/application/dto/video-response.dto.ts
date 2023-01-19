@@ -1,7 +1,7 @@
-import { Visibility } from "../../infrastructure/adapters/repositories/entities/content.model";
-import { VideoSource } from "../../domain/models/video.model";
 import { PresignedUrlResponse } from "../../../core/types/presigned-url.type";
+import { VideoSource } from "../../domain/models/video.model";
 import { Watchtime } from "../../domain/models/watchtime.model";
+import { Visibility } from "../../infrastructure/adapters/repositories/entities/content.model";
 import { UserDto } from "./user.dto";
 
 export type VideoPsuResponse = {
@@ -23,8 +23,6 @@ export class VideoResponse {
     publisher: UserDto;
 
     visibility: Visibility;
-
-    draft: boolean;
 
     likes?: number;
 
