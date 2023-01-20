@@ -23,7 +23,14 @@ import {
 import { VideoCreateDto } from "../../application/dto/video-create.dto";
 import { youtube_v3 } from "googleapis";
 import { TokenService } from "../services/token.service";
-import { IsAdmin, MeId, MeRoles, Roles } from "@polyflix/x-utils";
+import {
+    AuthorizationService,
+    IsAdmin,
+    MeId,
+    MeRoles,
+    Role,
+    Roles
+} from "@polyflix/x-utils";
 import { PresignedUrlResponse } from "../../../core/types/presigned-url.type";
 import { MINIO_BUCKETS } from "../../../core/constants/presignedUrl.constant";
 import { PresignedUrl } from "../../domain/models/presigned-url.entity";
@@ -32,7 +39,7 @@ import { Paginate } from "src/main/core/types/pagination.dto";
 import { VideoUpdateDto } from "../../application/dto/video-update.dto";
 import { LikeService } from "../services/like.service";
 import { Span } from "nestjs-otel";
-import { Role } from "@polyflix/x-utils/dist/types/roles.enum";
+import { Visibility } from "../adapters/repositories/entities/content.model";
 
 @Controller("videos")
 export class CrudVideoController {
@@ -42,7 +49,8 @@ export class CrudVideoController {
         private readonly likeService: LikeService,
         private readonly videoApiMapper: VideoApiMapper,
         private readonly presignedUrlApiMapper: PresignedUrlApiMapper,
-        private readonly tokenService: TokenService
+        private readonly tokenService: TokenService,
+        private readonly authorizationService: AuthorizationService
     ) {}
 
     @Post()
@@ -70,6 +78,16 @@ export class CrudVideoController {
             (response as VideoPsuResponse).thumbnailPutPsu =
                 this.presignedUrlApiMapper.entityToApi(thumbnailPutPsu);
         }
+
+        if (response.visibility === Visibility.PUBLIC) {
+            await this.authorizationService.setVideoPublic(response.id);
+        }
+
+        await this.authorizationService.writeOwnerToVideo(meId, response.id);
+        await this.authorizationService.writeOwnerRoleToVideo(
+            Role.Admin,
+            response.id
+        );
 
         return response;
     }
@@ -131,6 +149,10 @@ export class CrudVideoController {
         @MeId() userId: string
     ): Promise<VideoResponse> {
         const video: Video = await this.videoService.findOne(slug, userId);
+
+        if (!(await this.authorizationService.canViewVideo(userId, video.id))) {
+            throw new ForbiddenException(`You cannot view this video`);
+        }
 
         if (!isAdmin && Video.canAccessVideo(video, userId).isError()) {
             throw new UnauthorizedException(`You cannot access this video`);
