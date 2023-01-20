@@ -5,6 +5,11 @@ telemetry:
   port: 4317
   host: localhost
 
+authorization:
+  read: http://localhost:4466
+  write: http://localhost:4467
+#  apikey: yourApikey
+
 kafka:
   topics:
     video: polyflix.video

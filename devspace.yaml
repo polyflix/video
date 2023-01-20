@@ -11,14 +11,26 @@ dev:
   app:
     imageSelector: ghcr.io/polyflix/video:main
     devImage: ghcr.io/loft-sh/devspace-containers/typescript:18-alpine
+    env:
+      - name: NODE_ENV
+        value: development
+      - name: NEST_AUTHORIZATION_READ
+        value: http://keto-read:80
+      - name: NEST_AUTHORIZATION_WRITE
+        value: http://keto-write:80
+      - name: LOG_LEVEL
+        value: debug
     sync:
       - path: ./
         excludePaths:
           - .git/
+          - node_modules/
+          - dist
+          - .idea
+          - x-utils/node_modules
+          - x-utils/dist
         uploadExcludePaths:
           - Dockerfile
-          - node_modules
-          - dist
     terminal:
       command: ./devcontainer.sh
     ports:
